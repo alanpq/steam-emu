@@ -1,6 +1,6 @@
 use std::net::TcpListener;
 
-use tracing::{info, metadata::LevelFilter};
+use tracing::{info, metadata::LevelFilter, error};
 
 extern crate libloading;
 use libloading::{Library, Symbol};
@@ -14,18 +14,23 @@ fn main() -> color_eyre::Result<()> {
   let listener = TcpListener::bind("127.0.0.1:1337")?;
   info!("TCP Socket open.");
 
-  unsafe {
-    let lib = Library::new("./spacewar/steam_api.dll")?;
-
-  }
-
-
-  let (mut stream, addr) = listener.accept()?;
-  info!(%addr, "Accepted");
-
   let mut stdout = std::io::stdout();
 
-  std::io::copy(&mut stream, &mut stdout).unwrap();
+
+  loop {
+    let (mut stream, addr) = listener.accept()?;
+    info!(%addr, "Accepted");
+
+
+    match std::io::copy(&mut stream, &mut stdout) {
+      Ok(_) => {
+        info!("TCP Socket closed.")
+      },
+      Err(err) => {
+        error!(%err);
+      },
+    };
+  }
 
 
   Ok(())
