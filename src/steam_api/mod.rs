@@ -1,6 +1,6 @@
 use std::{ffi::c_void, os::raw::{c_char, c_int}};
 
-use tracing::{info, debug};
+use tracing::{info, debug, error};
 
 use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64};
 
@@ -31,14 +31,27 @@ pub unsafe extern "C" fn SteamAPI_GetHSteamUser() -> HSteamUser {
 
 // FIXME: SteamUGC_v016
 
+use windows::Win32::System::Diagnostics::Debug::EXCEPTION_POINTERS;
 #[no_mangle]
-pub extern "C" fn SteamAPI_WriteMiniDump(
+pub unsafe extern "C" fn SteamAPI_WriteMiniDump(
   uStructuredExceptionCode: uint32, // The structured exception code.
-  pvExceptionInfo: *mut c_void,     // The EXCEPTION_POINTERS containing the action exception info
+  pvExceptionInfo: *mut EXCEPTION_POINTERS,     // The EXCEPTION_POINTERS containing the action exception info
   uBuildID: uint32                  // A Build ID to track what version of the app submitted this minidump.
                                     // This is not the same as a Steam build ID and is used only for crash reporting.
 ) {
-  debug!("SteamAPI_WriteMiniDump");
+  error!("====== SteamAPI_WriteMiniDump ======");
+  error!("Structured Exception Code: {:x}", uStructuredExceptionCode);
+  let exception = *pvExceptionInfo;
+  let mut rec_ptr = exception.ExceptionRecord;
+  
+  while !rec_ptr.is_null() {
+    let record = *rec_ptr;
+    let code = record.ExceptionCode;
+    let message = code.to_hresult().message();
+    error!(?code);
+    error!(%message);
+    rec_ptr = record.ExceptionRecord;
+  }
 }
 
 // FIXME: IsSteamRunning
