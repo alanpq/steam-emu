@@ -21,5 +21,7 @@ pub type uint16 = c_ushort;
 pub type uint32 = c_uint;
 pub type uint64 = c_ulonglong;
 
+pub type uintp = c_ulonglong;
+
 pub type HSteamPipe = int32;
 pub type HSteamUser = int32;
