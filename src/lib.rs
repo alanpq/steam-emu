@@ -1,6 +1,10 @@
-use std::{net::TcpStream, sync::Mutex, os::raw::{c_int, c_uint, c_short, c_ushort, c_char}};
+use std::{net::TcpStream, sync::Mutex, os::raw::{c_int, c_uint, c_short, c_ushort, c_char, c_uchar, c_ulonglong}};
 
 use tracing::info;
+
+pub mod steam_game_server;
+pub mod steam_internal;
+pub mod steam_api;
 
 #[ctor::ctor]
 fn ctor() {
@@ -10,52 +14,12 @@ fn ctor() {
   info!("hi");
 }
 
-#[no_mangle]
-pub extern "C" fn SteamAPI_Init() -> bool {
-  info!("init steamapi");
-  false
-}
+pub type int32 = c_int;
 
-type int32 = c_int;
-type uint32 = c_uint;
-type uint16 = c_ushort;
+pub type uint8 = c_uchar;
+pub type uint16 = c_ushort;
+pub type uint32 = c_uint;
+pub type uint64 = c_ulonglong;
 
-type HSteamPipe = int32;
-type HSteamUser = int32;
-#[no_mangle]
-pub extern "C" fn SteamGameServer_GetHSteamPipe() -> HSteamPipe {
-  0 // FIXME: implement
-}
-
-#[no_mangle]
-pub extern "C" fn SteamGameServer_RunCallbacks() {
-   // FIXME: implement
-}
-
-#[no_mangle]
-pub extern "C" fn SteamGameServer_GetHSteamUser() -> HSteamUser {
-  0 // FIXME: implement
-}
-
-#[no_mangle]
-pub extern "C" fn SteamGameServer_Shutdown() {}
-
-
-pub enum EServerMode {
-  eServerModeInvalid,
-  eServerModeNoAuthentication,
-  eServerModeAuthentication,
-  eServerModeAuthenticationAndSecure,
-}
-
-#[no_mangle]
-pub extern "C" fn SteamInternal_GameServer_Init(
-  unIP: uint32,
-  usLegacySteamPort: uint16,
-  usGamePort: uint16,
-  usQueryPort: uint16,
-  eServerMode: EServerMode,
-  pchVersionString: *const c_char
-) -> bool {
-  false
-}
+pub type HSteamPipe = int32;
+pub type HSteamUser = int32;
