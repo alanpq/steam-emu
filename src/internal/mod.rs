@@ -1,7 +1,7 @@
 use std::{os::raw::c_char, ffi::{c_void, CStr}, ptr::{null, self}, sync::RwLock, intrinsics::transmute};
 
 use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client}};
-use tracing::{info, debug, error};
+use tracing::{info, debug, error, span, Level};
 
 use lazy_static::lazy_static;
 
@@ -40,15 +40,17 @@ pub extern "C" fn SteamInternal_ContextInit(
   // let mut ctx = pContextInitData;
   // match ctx {
     // Some(ctx) => {
+      ctx.ctx.vtable = steam_api_context::get_vtable();
       debug!(?ctx);
-      debug!(?ctx.ctx);
-      debug!(?ctx.p_fn);
       // FIXME: wtf is happening here
       let counter = GLOBAL_COUNTER.read().unwrap();
       if ctx.counter != *counter {
         debug!("SteamInternal_ContextInit initializing...");
-        (ctx.p_fn)(ptr::addr_of_mut!(ctx.ctx));
-        debug!("called that function");
+        let span = span!(Level::DEBUG, "SteamInternal_ContextInit");
+        {
+          let _guard = span.enter();
+          (ctx.p_fn)(ptr::addr_of_mut!(ctx.ctx));
+        }
         ctx.counter = *counter;
         debug!("set that counter");
       }
