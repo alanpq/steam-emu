@@ -1,7 +1,9 @@
-use std::{os::raw::c_char, ffi::c_void, ptr::{null, self}};
+use std::{os::raw::c_char, ffi::c_void, ptr::{null, self}, sync::RwLock};
 
 use crate::{uint32, uint16, HSteamUser, uintp};
 use tracing::{info, debug, error};
+
+use lazy_static::lazy_static;
 
 pub enum EServerMode {
   eServerModeInvalid,
@@ -47,7 +49,9 @@ pub struct ContextInitData {
   ctx: CSteamAPIContext,
 }
 
-static GLOBAL_COUNTER: uintp = 1;
+lazy_static! {
+  pub static ref GLOBAL_COUNTER: RwLock<uintp> = RwLock::new(1);
+}
 
 #[no_mangle]
 pub extern "C" fn SteamInternal_ContextInit(
@@ -61,10 +65,11 @@ pub extern "C" fn SteamInternal_ContextInit(
       debug!(ctx.counter);
       debug!(?ctx.ctx);
       // FIXME: wtf is happening here
-      if ctx.counter != GLOBAL_COUNTER {
+      let counter = GLOBAL_COUNTER.read().unwrap();
+      if ctx.counter != *counter {
         debug!("SteamInternal_ContextInit initializing...");
         (ctx.p_fn)(ptr::addr_of_mut!(ctx.ctx));
-        ctx.counter = GLOBAL_COUNTER;
+        ctx.counter = *counter;
       }
       // debug!("{:?}", ptr::addr_of_mut!(ctx.ctx));
       // ptr::addr_of_mut!(ctx.ctx)

@@ -5,6 +5,7 @@ use tracing::{info, debug, Level};
 pub mod steam_game_server;
 pub mod steam_internal;
 pub mod steam_api;
+pub mod steam_client;
 
 #[ctor::ctor]
 fn ctor() {
