@@ -1,6 +1,6 @@
-use std::{os::raw::c_char, ffi::c_void, ptr::{null, self}, sync::RwLock};
+use std::{os::raw::c_char, ffi::{c_void, CStr}, ptr::{null, self}, sync::RwLock};
 
-use crate::{uint32, uint16, HSteamUser, uintp};
+use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client}};
 use tracing::{info, debug, error};
 
 use lazy_static::lazy_static;
@@ -116,5 +116,18 @@ pub unsafe extern "C" fn SteamInternal_CreateInterface(
   ver: *const c_char
 ) -> *mut c_void {
   debug!("SteamInternal_CreateInterface");
-  ptr::null_mut()
+  let client = get_steam_client().as_ref().unwrap();
+  if !client.is_user_logged_in() && !client.is_server_init() {return ptr::null_mut();}
+  let str = unsafe {CStr::from_ptr(ver).to_str().unwrap()};
+  debug!(ver=str);
+  return create_client_interface(str);
+}
+
+pub unsafe fn create_client_interface(ver: &str) -> *mut c_void {
+  debug!("create_client_interface");
+  if !ver.contains("SteamClient") { return ptr::null_mut(); }
+  // FIXME: actual versions of steamclient
+  // (currently hardcoded for SteamClient017)
+  let c = get_steam_client();
+  c.cast()
 }

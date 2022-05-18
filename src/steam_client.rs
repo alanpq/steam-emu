@@ -3,7 +3,15 @@ use std::{collections::HashMap, sync::Mutex};
 use tracing::{info, debug, error};
 
 use lazy_static::lazy_static;
-use crate::HSteamPipe;
+use crate::{HSteamPipe, HSteamUser};
+
+
+const CLIENT_HSTEAMUSER: HSteamUser = 1;
+
+pub static mut CLIENT: SteamClient = SteamClient {
+  server_init: false,
+  user_logged_in: false,
+};
 
 pub enum SteamPipe {
   NoUser,
@@ -36,6 +44,17 @@ impl SteamClient {
     let pipe = pipes.len() as HSteamPipe + 1;
     pipes.insert(pipe, SteamPipe::NoUser);
     pipe
+  }
+
+  pub fn connect_to_global_user(&mut self, hSteamPipe: HSteamPipe) -> HSteamUser {
+    debug!("SteamClient::connect_to_global_user {}", hSteamPipe);
+    let mut pipes = STEAM_PIPES.lock().unwrap();
+    if pipes.len() < 1 { return 0; }
+
+    self.user_log_in();
+
+    pipes.insert(hSteamPipe, SteamPipe::Client);
+    return CLIENT_HSTEAMUSER;
   }
 
   pub fn init_server(&mut self) {

@@ -1,8 +1,8 @@
-use std::{ffi::c_void, os::raw::{c_char, c_int}, sync::{Mutex, Arc, RwLock}};
+use std::{ffi::c_void, os::raw::{c_char, c_int}, sync::{Mutex, Arc, RwLock}, ptr};
 
 use tracing::{info, debug, error};
 
-use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::SteamClient, steam_internal::GLOBAL_COUNTER};
+use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamClient, CLIENT}, steam_internal::GLOBAL_COUNTER};
 
 use lazy_static::lazy_static;
 
@@ -18,14 +18,12 @@ fn load_old_interface_versions() {
 
 }
 
-pub fn get_steam_client() -> &'static SteamClient {
-  // FIXME: mutex stuff happens here in goldberg
-  let client = Box::leak(Box::new(SteamClient::new()));
-  client
+pub unsafe fn get_steam_client() -> *mut SteamClient {
+  ptr::addr_of_mut!(CLIENT)
 }
 
 #[no_mangle]
-pub extern "C" fn SteamAPI_Init() -> bool {
+pub unsafe extern "C" fn SteamAPI_Init() -> bool {
   debug!("SteamAPI_Init");
   if *(USER_STEAM_PIPE.read().unwrap()) != 0 {return true;}
   
@@ -34,6 +32,7 @@ pub extern "C" fn SteamAPI_Init() -> bool {
   let mut pipe = USER_STEAM_PIPE.write().unwrap();
   let client = get_steam_client();
   *pipe = SteamClient::create_steam_pipe();
+  client.as_mut().unwrap().connect_to_global_user(*pipe);
   let mut counter = GLOBAL_COUNTER.write().unwrap();
   *counter += 1;
   true
