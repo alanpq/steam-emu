@@ -2,9 +2,12 @@ use std::{ffi::c_void, os::raw::{c_char, c_int}, sync::{Mutex, Arc, RwLock}, ptr
 
 use tracing::{info, debug, error};
 
-use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamClient}, steam_internal::GLOBAL_COUNTER, CLIENT};
+use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamClient}, internal::GLOBAL_COUNTER, CLIENT};
 
 use lazy_static::lazy_static;
+
+mod steam_user;
+pub use steam_user::SteamUser;
 
 lazy_static! {
   static ref USER_STEAM_PIPE: RwLock<HSteamPipe> = RwLock::new(0);

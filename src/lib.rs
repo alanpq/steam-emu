@@ -1,5 +1,5 @@
 pub mod steam_game_server;
-pub mod steam_internal;
+pub mod internal;
 pub mod steam_api;
 pub mod steam_client;
 

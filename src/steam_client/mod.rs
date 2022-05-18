@@ -4,8 +4,8 @@ use tracing::{info, debug, error};
 
 use lazy_static::lazy_static;
 use vtables::VTable;
-use vtables_derive::{VTable, has_vtable, virtual_index};
-use crate::{HSteamPipe, HSteamUser, int32};
+use vtables_derive::{VTable, has_vtable};
+use crate::{HSteamPipe, HSteamUser, int32, steam_api::SteamUser};
 
 mod methods;
 
@@ -45,6 +45,8 @@ pub struct SteamClient {
   pub vtable: *mut *mut usize,
   server_init: bool,
   user_logged_in: bool,
+
+  steam_user: SteamUser,
 }
 
 impl SteamClient {
@@ -54,6 +56,8 @@ impl SteamClient {
       vtable: methods::get_vtable(),
       server_init: false,
       user_logged_in: false,
+
+      steam_user: SteamUser::new(),
       
     }
   }

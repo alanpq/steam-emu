@@ -2,7 +2,7 @@ use std::{os::raw::c_char, ffi::c_void, ptr};
 
 use tracing::{info, debug, error};
 
-use crate::{HSteamPipe, HSteamUser};
+use crate::{HSteamPipe, HSteamUser, steam_api::SteamUser};
 
 use super::{SteamClient, EAccountType};
 
@@ -47,9 +47,9 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUser(
   hSteamUser:HSteamUser, 
   hSteamPipe:HSteamPipe, 
   pchVersion: *const c_char
-) ->  *mut c_void {
+) ->  *mut SteamUser {
   debug!("GetISteamUser");
-  ptr::null_mut()
+  ptr::addr_of_mut!((*self_).steam_user)
 }
 
 pub unsafe extern "C" fn SteamAPI_ISteamClient_GetISteamFriends(
