@@ -42,34 +42,36 @@ pub struct CSteamAPIContext {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ContextInitData {
-  p_fn: fn(pCtx: &CSteamAPIContext),
+  p_fn: fn(pCtx: *mut CSteamAPIContext),
   counter: uintp,
   ctx: CSteamAPIContext,
 }
 
-static global_counter: uintp = 0;
+static GLOBAL_COUNTER: uintp = 1;
 
 #[no_mangle]
 pub extern "C" fn SteamInternal_ContextInit(
-  pContextInitData: *mut ContextInitData
-) -> *mut CSteamAPIContext {
+  pContextInitData: &mut ContextInitData
+) -> &mut CSteamAPIContext {
   debug!("SteamInternal_ContextInit");
-  let mut ctx = unsafe { pContextInitData.as_mut() };
-  match ctx.as_mut() {
-    Some(ctx) => {
+  // let mut ctx = unsafe { pContextInitData.as_mut() };
+  let mut ctx = pContextInitData;
+  // match ctx {
+    // Some(ctx) => {
       debug!(ctx.counter);
       debug!(?ctx.ctx);
-      if ctx.counter != global_counter {
+      // FIXME: wtf is happening here
+      if ctx.counter != GLOBAL_COUNTER {
         debug!("SteamInternal_ContextInit initializing...");
-        (ctx.p_fn)(&ctx.ctx);
-        ctx.counter = global_counter;
+        (ctx.p_fn)(ptr::addr_of_mut!(ctx.ctx));
+        ctx.counter = GLOBAL_COUNTER;
       }
-      debug!("{:?}", ptr::addr_of_mut!(ctx.ctx));
-      ptr::addr_of_mut!(ctx.ctx)
-    },
-    None => panic!("SteamInternal_ContextInit: invalid pContextInitData!"),
-}
-  
+      // debug!("{:?}", ptr::addr_of_mut!(ctx.ctx));
+      // ptr::addr_of_mut!(ctx.ctx)
+      &mut ctx.ctx
+    // },
+    // None => panic!("SteamInternal_ContextInit: invalid pContextInitData!"),
+// }
 }
 
 #[no_mangle]
