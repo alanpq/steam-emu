@@ -24,6 +24,9 @@ color-eyre = "0.6.1"
 tracing = "0.1.34"
 tracing-subscriber = "0.3.11"
 
+vtables = "0.1"
+vtables_derive = "0.1"
+
 [dependencies.windows]
 version = "0.36.1"
 features = [

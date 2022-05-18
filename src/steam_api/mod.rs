@@ -2,7 +2,7 @@ use std::{ffi::c_void, os::raw::{c_char, c_int}, sync::{Mutex, Arc, RwLock}, ptr
 
 use tracing::{info, debug, error};
 
-use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamClient, CLIENT}, steam_internal::GLOBAL_COUNTER};
+use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamClient}, steam_internal::GLOBAL_COUNTER, CLIENT};
 
 use lazy_static::lazy_static;
 
@@ -19,7 +19,7 @@ fn load_old_interface_versions() {
 }
 
 pub unsafe fn get_steam_client() -> *mut SteamClient {
-  ptr::addr_of_mut!(CLIENT)
+  CLIENT
 }
 
 #[no_mangle]
@@ -71,9 +71,12 @@ pub unsafe extern "C" fn SteamAPI_WriteMiniDump(
   error!("Structured Exception Code: {:x}", uStructuredExceptionCode);
   let exception = *pvExceptionInfo;
   let mut rec_ptr = exception.ExceptionRecord;
+
   
   while !rec_ptr.is_null() {
     let record = *rec_ptr;
+    let address = record.ExceptionAddress;
+    error!(?address);
     let code = record.ExceptionCode;
     let message = code.to_hresult().message();
     error!(?code);

@@ -129,5 +129,8 @@ pub unsafe fn create_client_interface(ver: &str) -> *mut c_void {
   // FIXME: actual versions of steamclient
   // (currently hardcoded for SteamClient017)
   let c = get_steam_client();
-  c.cast()
+  debug!(?c);
+  let vtable = (*c).vtable;
+  debug!(?vtable);
+  c as _
 }
