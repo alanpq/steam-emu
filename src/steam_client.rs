@@ -17,14 +17,16 @@ lazy_static! {
 
 
 pub struct SteamClient {
-
+  server_init: bool,
+  user_logged_in: bool,
 }
 
 impl SteamClient {
   pub fn new() -> SteamClient {
     debug!("Init new SteamClient");
     SteamClient {
-      
+      server_init: false,
+      user_logged_in: false,
     }
   }
 
@@ -35,4 +37,30 @@ impl SteamClient {
     pipes.insert(pipe, SteamPipe::NoUser);
     pipe
   }
+
+  pub fn init_server(&mut self) {
+    self.server_init = true;
+  }
+
+  pub fn shutdown_server(&mut self) {
+    self.server_init = false;
+  }
+
+  pub fn is_server_init(&self) -> bool {
+    self.server_init
+  }
+
+  pub fn user_log_in(&mut self) {
+    // TODO: user login
+    self.user_logged_in = true;
+  }
+
+  pub fn shutdown_client(&mut self) {
+    self.user_logged_in = false;
+  }
+
+  pub fn is_user_logged_in(&self) -> bool {
+    self.user_logged_in
+  }
+
 }
