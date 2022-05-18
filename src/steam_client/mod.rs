@@ -43,44 +43,19 @@ pub enum EAccountType {
 #[derive(VTable, Debug)]
 pub struct SteamClient {
   pub vtable: *mut *mut usize,
-  test: int32,
   server_init: bool,
   user_logged_in: bool,
-
-  steam_user: *mut c_void,
 }
 
-#[allow(non_snake_case)]
-impl SteamClient {
-  #[virtual_index(0)]
-  fn CreateSteamPipe(&self) -> HSteamPipe {}
-
-  #[virtual_index(1)]
-  fn BReleaseSteamPipe(&self, hSteamPipe:HSteamPipe) -> bool {}
-  
-  #[virtual_index(2)]
-  fn ConnectToGlobalUser(&self, hSteamPipe:HSteamPipe) -> HSteamUser {}
-  
-  #[virtual_index(3)]
-  fn CreateLocalUser(&self, hSteamPipe: *mut HSteamPipe, eAccountType:EAccountType) -> HSteamUser {}
-  
-  #[virtual_index(4)]
-  fn ReleaseUser(&self, hSteamPipe:HSteamPipe, hSteamUser:HSteamUser) {}
-  
-  #[virtual_index(5)]
-  fn GetISteamUser(&self, hSteamUser:HSteamUser, hSteamPipe:HSteamPipe, pchVersion: *const c_char) ->  *mut c_void {}
-}
 impl SteamClient {
   pub fn new() -> SteamClient {
     debug!("Init new SteamClient");
-    let mut c = SteamClient {
-      test: 48879,
+    SteamClient {
+      vtable: methods::get_vtable(),
       server_init: false,
       user_logged_in: false,
-      steam_user: ptr::null_mut(),
-      vtable: methods::get_vtable(),
-    };
-    c
+      
+    }
   }
 
   pub fn create_steam_pipe() -> HSteamPipe {
