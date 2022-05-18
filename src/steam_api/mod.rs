@@ -7,7 +7,9 @@ use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamC
 use lazy_static::lazy_static;
 
 mod steam_user;
+mod steam_friends;
 pub use steam_user::SteamUser;
+pub use steam_friends::SteamFriends;
 
 lazy_static! {
   static ref USER_STEAM_PIPE: RwLock<HSteamPipe> = RwLock::new(0);
