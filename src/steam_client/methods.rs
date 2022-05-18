@@ -2,7 +2,7 @@ use std::{os::raw::c_char, ffi::c_void, ptr};
 
 use tracing::{info, debug, error};
 
-use crate::{HSteamPipe, HSteamUser, steam_api::SteamUser};
+use crate::{HSteamPipe, HSteamUser, steam_api::{SteamUser, SteamFriends}};
 
 use super::{SteamClient, EAccountType};
 
@@ -57,9 +57,11 @@ pub unsafe extern "C" fn SteamAPI_ISteamClient_GetISteamFriends(
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut c_void {
+) -> *mut SteamFriends {
   debug!("GetISteamFriends");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_friends);
+  debug!(?p);
+  ptr::addr_of_mut!((*self_).steam_friends)
 }
 
 pub fn get_vtable() -> *mut *mut usize {
