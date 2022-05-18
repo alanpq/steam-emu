@@ -16,6 +16,10 @@ pub struct CSteamAPIContext {
   pub vtable: *mut *mut usize,
 }
 
+extern "fastcall" fn stub() {
+  error!("stub hit!");
+}
+
 extern "fastcall" fn Get_SteamUser() -> *mut SteamUser {
   ptr::null_mut()
 }
@@ -23,33 +27,33 @@ extern "fastcall" fn Get_SteamUser() -> *mut SteamUser {
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
     static mut VTABLE: [*mut usize; 27] = [
-      ptr::null_mut(),
+      stub as _,
       Get_SteamUser as _,
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
+      stub as _,
     ];
     VTABLE.as_mut_ptr()
   }
