@@ -1,3 +1,6 @@
+#![allow(non_snake_case)]
+#![allow(unused_variables)]
+
 use std::{ffi::c_void, os::raw::{c_char, c_int}, sync::{Mutex, Arc, RwLock}, ptr};
 
 use tracing::{info, debug, error};
@@ -6,10 +9,31 @@ use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamC
 
 use lazy_static::lazy_static;
 
-mod steam_user;
-mod steam_friends;
-pub use steam_user::SteamUser;
-pub use steam_friends::SteamFriends;
+mod apps;
+mod friends;
+mod game_search;
+mod game_server_stats;
+mod matchmaking_servers;
+mod matchmaking;
+mod networking;
+mod remote_storage;
+mod screenshots;
+mod user_stats;
+mod user;
+mod utils;
+
+pub use apps::SteamApps;
+pub use friends::SteamFriends;
+pub use game_search::SteamGameSearch;
+pub use game_server_stats::SteamGameServerStats;
+pub use matchmaking_servers::SteamMatchmakingServers;
+pub use matchmaking::SteamMatchmaking;
+pub use networking::SteamNetworking;
+pub use remote_storage::SteamRemoteStorage;
+pub use screenshots::SteamScreenshots;
+pub use user_stats::SteamUserStats;
+pub use user::SteamUser;
+pub use utils::SteamUtils;
 
 lazy_static! {
   static ref USER_STEAM_PIPE: RwLock<HSteamPipe> = RwLock::new(0);
