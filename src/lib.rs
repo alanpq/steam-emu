@@ -3,6 +3,8 @@ pub mod internal;
 pub mod steam_api;
 pub mod steam_client;
 
+#[macro_use] extern crate const_cstr;
+
 use std::{net::TcpStream, sync::Mutex, os::raw::{c_int, c_uint, c_short, c_ushort, c_char, c_uchar, c_ulonglong}, ptr};
 
 use steam_client::SteamClient;

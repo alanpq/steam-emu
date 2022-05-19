@@ -27,6 +27,8 @@ tracing-subscriber = "0.3.11"
 vtables = "0.1"
 vtables_derive = "0.1"
 
+const-cstr = "0.3.0"
+
 [dependencies.windows]
 version = "0.36.1"
 features = [
