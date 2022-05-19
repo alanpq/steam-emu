@@ -28,6 +28,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
     return SteamAPI_ISteamClient_GetISteamApps(self_, _edx, hSteamUser, hSteamPipe, pchVersion) as _;
   } else if version.starts_with("SteamInput") {
     return SteamAPI_ISteamClient_GetISteamInput(self_, _edx, hSteamUser, hSteamPipe, pchVersion) as _;
+  } else if version.starts_with("SteamNetworkingUtils") {
+    return ptr::addr_of_mut!((*self_).steam_networking_utils) as _;
   }
   
   ptr::null_mut()
