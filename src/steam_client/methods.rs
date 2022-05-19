@@ -113,12 +113,15 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut c_void {
-  let version = CStr::from_ptr(pchVersion);
+  let version = CStr::from_ptr(pchVersion).to_str().unwrap();
   debug!("GetISteamGenericInterface '{:?}'", version);
-  match pchVersion {
-    
-    _ => ptr::null_mut()
+
+  // FIXME: there are so many interfaces yet to be added here
+  if version.starts_with("SteamUser") {
+    return SteamAPI_ISteamClient_GetISteamUser(self_, _edx, hSteamUser, hSteamPipe, pchVersion) as _;
   }
+  
+  ptr::null_mut()
 }
 
 pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUserStats (
