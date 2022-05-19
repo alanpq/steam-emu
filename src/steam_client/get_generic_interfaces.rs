@@ -10,6 +10,7 @@ use super::SteamClient;
 use super::SteamAPI_ISteamClient_GetISteamUser;
 
 
+#[no_mangle]
 pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
   self_: *mut SteamClient, 
   _edx: *mut c_void,

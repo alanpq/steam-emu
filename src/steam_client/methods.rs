@@ -323,6 +323,7 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamParentalSettings 
   p
 }
 
+#[no_mangle]
 pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamInput (
   self_: *mut SteamClient, 
   _edx: *mut c_void,
@@ -335,6 +336,7 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamInput (
   p
 }
 
+#[no_mangle]
 pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamParties (
   self_: *mut SteamClient, 
   _edx: *mut c_void,
@@ -347,6 +349,7 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamParties (
   p
 }
 
+#[no_mangle]
 pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamRemotePlay (
   self_: *mut SteamClient, 
   _edx: *mut c_void,
@@ -359,6 +362,7 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamRemotePlay (
   p
 }
 
+#[no_mangle]
 pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_DEPRECATED_GetISteamUnifiedMessages (
   self_: *mut SteamClient, 
   _edx: *mut c_void,

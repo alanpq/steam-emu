@@ -1,7 +1,15 @@
+#![feature(abi_thiscall)]
+#![feature(c_unwind)]
 pub mod steam_game_server;
 pub mod internal;
 pub mod steam_api;
 pub mod steam_client;
+
+mod universe;
+mod steam_id;
+
+pub use universe::*;
+pub use steam_id::*;
 
 #[macro_use] extern crate const_cstr;
 

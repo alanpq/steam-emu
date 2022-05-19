@@ -1,5 +1,6 @@
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 #[repr(u8)]
-#[derive(Debug)]
 pub enum EUniverse {
   Invalid = 0,
   Public = 1,
