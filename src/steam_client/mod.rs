@@ -5,7 +5,7 @@ use tracing::{info, debug, error};
 use lazy_static::lazy_static;
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
-use crate::{HSteamPipe, HSteamUser, int32, steam_api::{SteamUser, SteamFriends}};
+use crate::{HSteamPipe, HSteamUser, int32, steam_api::*};
 
 mod methods;
 
@@ -43,11 +43,22 @@ pub enum EAccountType {
 #[derive(VTable, Debug)]
 pub struct SteamClient {
   pub vtable: *mut *mut usize,
+  test: int32,
   server_init: bool,
   user_logged_in: bool,
 
   steam_user: SteamUser,
   steam_friends: SteamFriends,
+  steam_utils: SteamUtils,
+  steam_matchmaking: SteamMatchmaking,
+  steam_matchmaking_servers: SteamMatchmakingServers,
+  steam_user_stats: SteamUserStats,
+  steam_game_server_stats: SteamGameServerStats,
+  steam_apps: SteamApps,
+  steam_networking: SteamNetworking,
+  steam_remote_storage: SteamRemoteStorage,
+  steam_screenshots: SteamScreenshots,
+  steam_game_search: SteamGameSearch,
 }
 
 impl SteamClient {
@@ -55,11 +66,22 @@ impl SteamClient {
     debug!("Init new SteamClient");
     SteamClient {
       vtable: methods::get_vtable(),
+      test: 48879,
       server_init: false,
       user_logged_in: false,
 
       steam_user: SteamUser::new(),
       steam_friends: SteamFriends::new(),
+      steam_utils: SteamUtils::new(),
+      steam_matchmaking: SteamMatchmaking::new(),
+      steam_matchmaking_servers: SteamMatchmakingServers::new(),
+      steam_user_stats: SteamUserStats::new(),
+      steam_game_server_stats: SteamGameServerStats::new(),
+      steam_apps: SteamApps::new(),
+      steam_networking: SteamNetworking::new(),
+      steam_remote_storage: SteamRemoteStorage::new(),
+      steam_screenshots: SteamScreenshots::new(),
+      steam_game_search: SteamGameSearch::new(),
       
     }
   }

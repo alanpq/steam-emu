@@ -11,12 +11,12 @@ use super::{SteamClient, EAccountType};
 
 #[allow(non_camel_case_types)]
 
-extern "fastcall" fn SteamAPI_ISteamClient_CreateSteamPipe(self_: *mut SteamClient) -> HSteamPipe {
+extern "C" fn SteamAPI_ISteamClient_CreateSteamPipe(self_: *mut SteamClient) -> HSteamPipe {
   debug!("SteamAPI_ISteamClient_CreateSteamPipe");
   0
 }
 
-extern "fastcall" fn SteamAPI_ISteamClient_BReleaseSteamPipe(
+extern "C" fn SteamAPI_ISteamClient_BReleaseSteamPipe(
   self_: *mut SteamClient,
   hSteamPipe:HSteamPipe
 ) -> bool {
@@ -24,13 +24,13 @@ extern "fastcall" fn SteamAPI_ISteamClient_BReleaseSteamPipe(
   false
 }
 
-extern "fastcall" fn SteamAPI_ISteamClient_ConnectToGlobalUser
+extern "C" fn SteamAPI_ISteamClient_ConnectToGlobalUser
   (self_: *mut SteamClient, hSteamPipe:HSteamPipe) -> HSteamUser {
   debug!("SteamAPI_ISteamClient_ConnectToGlobalUser");
   0
 }
 
-extern "fastcall" fn SteamAPI_ISteamClient_CreateLocalUser(
+extern "C" fn SteamAPI_ISteamClient_CreateLocalUser(
   self_: *mut SteamClient,
   hSteamPipe: *mut HSteamPipe,
   eAccountType:EAccountType
@@ -39,7 +39,7 @@ extern "fastcall" fn SteamAPI_ISteamClient_CreateLocalUser(
   0
 }
 
-extern "fastcall" fn SteamAPI_ISteamClient_ReleaseUser(
+extern "C" fn SteamAPI_ISteamClient_ReleaseUser(
   self_: *mut SteamClient,
   hSteamPipe:HSteamPipe,
   hSteamUser:HSteamUser
@@ -49,56 +49,66 @@ extern "fastcall" fn SteamAPI_ISteamClient_ReleaseUser(
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUser(
   self_: *mut SteamClient,
-  hSteamUser:HSteamUser, 
-  hSteamPipe:HSteamPipe, 
+  _edx: *mut c_void,
+  hSteamUser:HSteamUser,
+  hSteamPipe:HSteamPipe,
   pchVersion: *const c_char
 ) ->  *mut SteamUser {
-  debug!("GetISteamUser");
+  let p = ptr::addr_of_mut!((*self_).steam_user);
+  debug!("GetISteamUser -> {:?}", p);
   ptr::addr_of_mut!((*self_).steam_user)
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamFriends(
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamFriends {
   let p = ptr::addr_of_mut!((*self_).steam_friends);
   debug!("GetISteamFriends -> {:?}", p);
-  ptr::addr_of_mut!((*self_).steam_friends)
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUtils(
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamUtils {
-  debug!("GetISteamUtils -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_utils);
+  debug!("GetISteamUtils -> {:?}", p);
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMatchmaking(
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamMatchmaking {
-  debug!("GetISteamMatchmaking -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_matchmaking);
+  debug!("GetISteamMatchmaking -> {:?}", p);
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMatchmakingServers(
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamMatchmakingServers {
-  debug!("GetISteamMatchmakingServers -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_matchmaking_servers);
+  debug!("GetISteamMatchmakingServers -> {:?}", p);
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
@@ -109,85 +119,269 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUserStats (
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamUserStats {
-  debug!("GetISteamUserStats -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_user_stats);
+  debug!("GetISteamUserStats -> {:?}", p);
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGameServerStats (
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamGameServerStats {
-  debug!("GetISteamGameServerStats -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_game_server_stats);
+  debug!("GetISteamGameServerStats -> {:?}", p);
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamApps (
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamApps {
-  debug!("GetISteamApps -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_apps);
+  debug!("GetISteamApps -> {:?}", p);
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamNetworking (
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamNetworking {
-  debug!("GetISteamNetworking -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_networking);
+  debug!("GetISteamNetworking -> {:?}", p);
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamRemoteStorage (
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamRemoteStorage {
-  debug!("GetISteamRemoteStorage -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_remote_storage);
+  debug!("GetISteamRemoteStorage -> {:?}", p);
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamScreenshots (
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamScreenshots {
-  debug!("GetISteamScreenshots -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_screenshots);
+  debug!("GetISteamScreenshots -> {:?}", p);
+  p
 }
 
 unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGameSearch (
   self_: *mut SteamClient, 
+  _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
-  debug!("GetISteamGameSearch -> 0x0");
-  ptr::null_mut()
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamGameSearch -> {:?}", p);
+  p
+}
+
+// FIXME: fix from here down
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamHTTP (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamHTTP -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamController (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamController -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUGC (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamUGC -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamAppList (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamAppList -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMusic (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamMusic -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMusicRemote (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamMusicRemote -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamHTMLSurface (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamHTMLSurface -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamInventory (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamInventory -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamVideo (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamVideo -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamParentalSettings (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamParentalSettings -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamInput (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamInput -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamParties (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamParties -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamRemotePlay (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut SteamGameSearch {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamRemotePlay -> {:?}", p);
+  p
+}
+
+unsafe extern "fastcall" fn SteamAPI_ISteamClient_DEPRECATED_GetISteamUnifiedMessages (
+  self_: *mut SteamClient, 
+  _edx: *mut c_void,
+  hSteamUser: HSteamUser, 
+  hSteamPipe: HSteamPipe, 
+  pchVersion: *const c_char
+) -> *mut c_void {
+  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+  debug!("GetISteamUnifiedMessages -> {:?}", p);
+  p as _
 }
 
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 20] =  [
+    static mut VTABLE: [*mut usize; 40] =  [
       SteamAPI_ISteamClient_CreateSteamPipe as _,
       SteamAPI_ISteamClient_BReleaseSteamPipe as _,
       SteamAPI_ISteamClient_ConnectToGlobalUser as _,
       SteamAPI_ISteamClient_CreateLocalUser as _,
       SteamAPI_ISteamClient_ReleaseUser as _,
       SteamAPI_ISteamClient_GetISteamUser as _,
-      ptr::null_mut(),
-      ptr::null_mut(),
+      ptr::null_mut(), // GetISteamGameServer
+      ptr::null_mut(), // SetLocalIPBinding
       SteamAPI_ISteamClient_GetISteamFriends as _,
       SteamAPI_ISteamClient_GetISteamUtils as _,
       SteamAPI_ISteamClient_GetISteamMatchmaking as _,
@@ -200,6 +394,26 @@ pub fn get_vtable() -> *mut *mut usize {
       SteamAPI_ISteamClient_GetISteamRemoteStorage as _,
       SteamAPI_ISteamClient_GetISteamScreenshots as _,
       SteamAPI_ISteamClient_GetISteamGameSearch as _,
+      ptr::null_mut(), // GetIPCCallCount
+      ptr::null_mut(), // SetWarningMessageHook
+      ptr::null_mut(), // BShutdownIfAllPipesClosed
+      SteamAPI_ISteamClient_GetISteamHTTP as _,
+      SteamAPI_ISteamClient_DEPRECATED_GetISteamUnifiedMessages as _,
+      SteamAPI_ISteamClient_GetISteamController as _,
+      SteamAPI_ISteamClient_GetISteamUGC as _,
+      SteamAPI_ISteamClient_GetISteamAppList as _,
+      SteamAPI_ISteamClient_GetISteamMusic as _,
+      SteamAPI_ISteamClient_GetISteamMusicRemote as _,
+      SteamAPI_ISteamClient_GetISteamHTMLSurface as _,
+      ptr::null_mut(), // DEPRECATED_Set_SteamAPI_CPostAPIResultInProcess
+      ptr::null_mut(), // DEPRECATED_Remove_SteamAPI_CPostAPIResultInProcess
+      ptr::null_mut(), // Set_SteamAPI_CCheckCallbackRegisteredInProcess
+      SteamAPI_ISteamClient_GetISteamInventory as _,
+      SteamAPI_ISteamClient_GetISteamVideo as _,
+      SteamAPI_ISteamClient_GetISteamParentalSettings as _,
+      SteamAPI_ISteamClient_GetISteamInput as _,
+      SteamAPI_ISteamClient_GetISteamParties as _,
+      SteamAPI_ISteamClient_GetISteamRemotePlay as _,
     ];
     VTABLE.as_mut_ptr()
   }
