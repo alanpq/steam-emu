@@ -6,7 +6,7 @@ use tracing::{info, debug, error};
 use vtables::VTable;
 use vtables_derive::{has_vtable, VTable};
 
-use crate::steam_api::SteamUser;
+use crate::steam_api;
 
 #[has_vtable]
 #[derive(VTable)]
@@ -16,19 +16,24 @@ pub struct CSteamAPIContext {
   pub vtable: *mut *mut usize,
 }
 
-extern "fastcall" fn stub() {
+extern "fastcall" fn stub() -> *mut c_void {
   error!("stub hit!");
+  ptr::null_mut()
 }
 
-extern "fastcall" fn Get_SteamUser() -> *mut SteamUser {
-  ptr::null_mut()
+extern "fastcall" fn SteamUser(_self: CSteamAPIContext) -> *mut steam_api::SteamUser {
+  debug!("SteamUser");
+  unsafe {
+    
+    ptr::null_mut()
+  }
 }
 
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
     static mut VTABLE: [*mut usize; 27] = [
       stub as _,
-      Get_SteamUser as _,
+      SteamUser as _,
       stub as _,
       stub as _,
       stub as _,
