@@ -6,7 +6,9 @@ use vtables_derive::{VTable, has_vtable};
 
 use crate::uint64;
 
+pub type InputActionSetHandle_t = uint64;
 pub type ControllerDigitalActionHandle_t = uint64;
+pub type ControllerAnalogActionHandle_t = uint64;
 
 #[has_vtable]
 #[derive(VTable, Debug)]
@@ -19,6 +21,31 @@ impl SteamInput {
   }
 }
 
+pub extern "fastcall" fn SteamAPI_ISteamInput_Init(
+  self_: *mut SteamInput,
+  _edx: *mut c_void,
+  explicitly_run_call_frame: bool,
+) -> bool {
+  // FIXME: implement
+  true
+}
+
+pub extern "fastcall" fn SteamAPI_ISteamInput_SetInputActionManifestFilePath(
+  self_: *mut SteamInput,
+  _edx: *mut c_void,
+  input_action_manifest_absolute_path: *const c_char,
+) -> bool {
+  true // FIXME: implement
+}
+
+pub extern "fastcall" fn SteamAPI_ISteamInput_GetActionSetHandle(
+  self_: *mut SteamInput,
+  _edx: *mut c_void,
+  pszActionName: *const c_char,
+) -> InputActionSetHandle_t {
+  0 // FIXME: implement
+}
+
 pub extern "fastcall" fn SteamAPI_ISteamInput_GetDigitalActionHandle(
   self_: *mut SteamInput,
   _edx: *mut c_void,
@@ -27,19 +54,27 @@ pub extern "fastcall" fn SteamAPI_ISteamInput_GetDigitalActionHandle(
   0 // FIXME: implement
 }
 
+pub extern "fastcall" fn SteamAPI_ISteamInput_GetAnalogActionHandle(
+  self_: *mut SteamInput,
+  _edx: *mut c_void,
+  pszActionName: *const c_char,
+) -> ControllerAnalogActionHandle_t {
+  0 // FIXME: implement
+}
+
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 20] = [
+    static mut VTABLE: [*mut usize; 21] = [
+      SteamAPI_ISteamInput_Init as _,
+      ptr::null_mut(),
+      SteamAPI_ISteamInput_SetInputActionManifestFilePath as _,
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
+      SteamAPI_ISteamInput_GetActionSetHandle as _,
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
@@ -50,6 +85,7 @@ pub fn get_vtable() -> *mut *mut usize {
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
+      SteamAPI_ISteamInput_GetAnalogActionHandle as _,
     ];
     VTABLE.as_mut_ptr()
   }
