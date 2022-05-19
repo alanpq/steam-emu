@@ -4,6 +4,10 @@ use tracing::{info, debug, error};
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 
+use crate::uint64;
+
+pub type ControllerDigitalActionHandle_t = uint64;
+
 #[has_vtable]
 #[derive(VTable, Debug)]
 pub struct SteamInput {
@@ -15,13 +19,37 @@ impl SteamInput {
   }
 }
 
+pub extern "fastcall" fn SteamAPI_ISteamInput_GetDigitalActionHandle(
+  self_: *mut SteamInput,
+  _edx: *mut c_void,
+  pszActionName: *const c_char,
+) -> ControllerDigitalActionHandle_t {
+  0 // FIXME: implement
+}
+
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 4] = [
+    static mut VTABLE: [*mut usize; 20] = [
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      GetDigitalActionHandle as _,
     ];
     VTABLE.as_mut_ptr()
   }
