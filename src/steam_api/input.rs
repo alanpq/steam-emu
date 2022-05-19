@@ -46,10 +46,10 @@ pub fn get_vtable() -> *mut *mut usize {
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
       SteamAPI_ISteamInput_GetDigitalActionHandle as _,
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
     ];
     VTABLE.as_mut_ptr()
   }
