@@ -5,7 +5,7 @@ use std::{os::raw::{c_char, c_int}, ffi::{c_void, CStr}, ptr};
 
 use tracing::{info, debug, error};
 
-use crate::{HSteamPipe, HSteamUser, steam_api::{SteamUser, SteamFriends, SteamUtils, SteamScreenshots, SteamGameSearch, SteamRemoteStorage, SteamNetworking, SteamApps, SteamGameServerStats, SteamUserStats, SteamMatchmakingServers, SteamMatchmaking}};
+use crate::{HSteamPipe, HSteamUser, steam_api::{SteamUser, SteamFriends, SteamUtils, SteamScreenshots, SteamGameSearch, SteamRemoteStorage, SteamNetworking, SteamApps, SteamGameServerStats, SteamUserStats, SteamMatchmakingServers, SteamMatchmaking}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
 
 use super::{SteamClient, EAccountType};
 
@@ -104,24 +104,6 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMatchmakingServer
   let p = ptr::addr_of_mut!((*self_).steam_matchmaking_servers);
   //debug!("GetISteamMatchmakingServers -> {:?}", p);
   p
-}
-
-pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
-  self_: *mut SteamClient, 
-  _edx: *mut c_void,
-  hSteamUser: HSteamUser, 
-  hSteamPipe: HSteamPipe, 
-  pchVersion: *const c_char
-) -> *mut c_void {
-  let version = CStr::from_ptr(pchVersion).to_str().unwrap();
-  debug!("GetISteamGenericInterface '{:?}'", version);
-
-  // FIXME: there are so many interfaces yet to be added here
-  if version.starts_with("SteamUser") {
-    return SteamAPI_ISteamClient_GetISteamUser(self_, _edx, hSteamUser, hSteamPipe, pchVersion) as _;
-  }
-  
-  ptr::null_mut()
 }
 
 pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUserStats (

@@ -7,7 +7,10 @@ use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 use crate::{HSteamPipe, HSteamUser, int32, steam_api::*};
 
-pub mod methods;
+mod methods;
+mod get_generic_interfaces;
+pub use methods::*;
+pub use get_generic_interfaces::*;
 
 const CLIENT_HSTEAMUSER: HSteamUser = 1;
 

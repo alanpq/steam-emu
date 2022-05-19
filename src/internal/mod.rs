@@ -1,6 +1,6 @@
 use std::{os::raw::c_char, ffi::{c_void, CStr}, ptr::{null, self}, sync::RwLock, intrinsics::transmute};
 
-use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client, SteamAPI_GetHSteamPipe}, steam_client::methods::SteamAPI_ISteamClient_GetISteamGenericInterface};
+use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client, SteamAPI_GetHSteamPipe}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
 use tracing::{info, debug, error, span, Level};
 
 use lazy_static::lazy_static;
