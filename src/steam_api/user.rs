@@ -16,7 +16,7 @@ impl SteamUser {
 }
 
 extern "fastcall" fn BLoggedOn(self_: *mut SteamUser) -> bool {
-  false
+  true
 }
 
 pub fn get_vtable() -> *mut *mut usize {
