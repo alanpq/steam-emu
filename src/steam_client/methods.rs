@@ -55,7 +55,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUser(
   pchVersion: *const c_char
 ) ->  *mut SteamUser {
   let p = ptr::addr_of_mut!((*self_).steam_user);
-  debug!("GetISteamUser -> {:?}", p);
+  //debug!("GetISteamUser -> {:?}", p);
   ptr::addr_of_mut!((*self_).steam_user)
 }
 
@@ -67,7 +67,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamFriends(
   pchVersion: *const c_char
 ) -> *mut SteamFriends {
   let p = ptr::addr_of_mut!((*self_).steam_friends);
-  debug!("GetISteamFriends -> {:?}", p);
+  //debug!("GetISteamFriends -> {:?}", p);
   p
 }
 
@@ -78,7 +78,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUtils(
   pchVersion: *const c_char
 ) -> *mut SteamUtils {
   let p = ptr::addr_of_mut!((*self_).steam_utils);
-  debug!("GetISteamUtils -> {:?}", p);
+  //debug!("GetISteamUtils -> {:?}", p);
   p
 }
 
@@ -90,7 +90,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMatchmaking(
   pchVersion: *const c_char
 ) -> *mut SteamMatchmaking {
   let p = ptr::addr_of_mut!((*self_).steam_matchmaking);
-  debug!("GetISteamMatchmaking -> {:?}", p);
+  //debug!("GetISteamMatchmaking -> {:?}", p);
   p
 }
 
@@ -102,7 +102,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMatchmakingServers(
   pchVersion: *const c_char
 ) -> *mut SteamMatchmakingServers {
   let p = ptr::addr_of_mut!((*self_).steam_matchmaking_servers);
-  debug!("GetISteamMatchmakingServers -> {:?}", p);
+  //debug!("GetISteamMatchmakingServers -> {:?}", p);
   p
 }
 
@@ -113,7 +113,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
 ) -> *mut c_void {
-  debug!("GetISteamGenericInterface -> 0x0");
+  //debug!("GetISteamGenericInterface -> 0x0");
   ptr::null_mut()
 }
 
@@ -125,7 +125,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUserStats (
   pchVersion: *const c_char
 ) -> *mut SteamUserStats {
   let p = ptr::addr_of_mut!((*self_).steam_user_stats);
-  debug!("GetISteamUserStats -> {:?}", p);
+  //debug!("GetISteamUserStats -> {:?}", p);
   p
 }
 
@@ -137,7 +137,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGameServerStats (
   pchVersion: *const c_char
 ) -> *mut SteamGameServerStats {
   let p = ptr::addr_of_mut!((*self_).steam_game_server_stats);
-  debug!("GetISteamGameServerStats -> {:?}", p);
+  //debug!("GetISteamGameServerStats -> {:?}", p);
   p
 }
 
@@ -149,7 +149,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamApps (
   pchVersion: *const c_char
 ) -> *mut SteamApps {
   let p = ptr::addr_of_mut!((*self_).steam_apps);
-  debug!("GetISteamApps -> {:?}", p);
+  //debug!("GetISteamApps -> {:?}", p);
   p
 }
 
@@ -161,7 +161,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamNetworking (
   pchVersion: *const c_char
 ) -> *mut SteamNetworking {
   let p = ptr::addr_of_mut!((*self_).steam_networking);
-  debug!("GetISteamNetworking -> {:?}", p);
+  //debug!("GetISteamNetworking -> {:?}", p);
   p
 }
 
@@ -173,7 +173,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamRemoteStorage (
   pchVersion: *const c_char
 ) -> *mut SteamRemoteStorage {
   let p = ptr::addr_of_mut!((*self_).steam_remote_storage);
-  debug!("GetISteamRemoteStorage -> {:?}", p);
+  //debug!("GetISteamRemoteStorage -> {:?}", p);
   p
 }
 
@@ -185,7 +185,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamScreenshots (
   pchVersion: *const c_char
 ) -> *mut SteamScreenshots {
   let p = ptr::addr_of_mut!((*self_).steam_screenshots);
-  debug!("GetISteamScreenshots -> {:?}", p);
+  //debug!("GetISteamScreenshots -> {:?}", p);
   p
 }
 
@@ -197,7 +197,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGameSearch (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamGameSearch -> {:?}", p);
+  //debug!("GetISteamGameSearch -> {:?}", p);
   p
 }
 
@@ -211,7 +211,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamHTTP (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamHTTP -> {:?}", p);
+  //debug!("GetISteamHTTP -> {:?}", p);
   p
 }
 
@@ -223,7 +223,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamController (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamController -> {:?}", p);
+  //debug!("GetISteamController -> {:?}", p);
   p
 }
 
@@ -235,7 +235,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUGC (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamUGC -> {:?}", p);
+  //debug!("GetISteamUGC -> {:?}", p);
   p
 }
 
@@ -247,7 +247,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamAppList (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamAppList -> {:?}", p);
+  //debug!("GetISteamAppList -> {:?}", p);
   p
 }
 
@@ -259,7 +259,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMusic (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamMusic -> {:?}", p);
+  //debug!("GetISteamMusic -> {:?}", p);
   p
 }
 
@@ -271,7 +271,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMusicRemote (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamMusicRemote -> {:?}", p);
+  //debug!("GetISteamMusicRemote -> {:?}", p);
   p
 }
 
@@ -283,7 +283,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamHTMLSurface (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamHTMLSurface -> {:?}", p);
+  //debug!("GetISteamHTMLSurface -> {:?}", p);
   p
 }
 
@@ -295,7 +295,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamInventory (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamInventory -> {:?}", p);
+  //debug!("GetISteamInventory -> {:?}", p);
   p
 }
 
@@ -307,7 +307,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamVideo (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamVideo -> {:?}", p);
+  //debug!("GetISteamVideo -> {:?}", p);
   p
 }
 
@@ -319,7 +319,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamParentalSettings (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamParentalSettings -> {:?}", p);
+  //debug!("GetISteamParentalSettings -> {:?}", p);
   p
 }
 
@@ -331,7 +331,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamInput (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamInput -> {:?}", p);
+  //debug!("GetISteamInput -> {:?}", p);
   p
 }
 
@@ -343,7 +343,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamParties (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamParties -> {:?}", p);
+  //debug!("GetISteamParties -> {:?}", p);
   p
 }
 
@@ -355,7 +355,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamRemotePlay (
   pchVersion: *const c_char
 ) -> *mut SteamGameSearch {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamRemotePlay -> {:?}", p);
+  //debug!("GetISteamRemotePlay -> {:?}", p);
   p
 }
 
@@ -367,7 +367,7 @@ unsafe extern "fastcall" fn SteamAPI_ISteamClient_DEPRECATED_GetISteamUnifiedMes
   pchVersion: *const c_char
 ) -> *mut c_void {
   let p = ptr::addr_of_mut!((*self_).steam_game_search);
-  debug!("GetISteamUnifiedMessages -> {:?}", p);
+  //debug!("GetISteamUnifiedMessages -> {:?}", p);
   p as _
 }
 
