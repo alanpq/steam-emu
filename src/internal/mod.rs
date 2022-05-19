@@ -1,6 +1,6 @@
 use std::{os::raw::c_char, ffi::{c_void, CStr}, ptr::{null, self}, sync::RwLock, intrinsics::transmute};
 
-use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client}};
+use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client, SteamAPI_GetHSteamPipe}, steam_client::methods::SteamAPI_ISteamClient_GetISteamGenericInterface};
 use tracing::{info, debug, error, span, Level};
 
 use lazy_static::lazy_static;
@@ -40,7 +40,6 @@ pub extern "C" fn SteamInternal_ContextInit(
   // let mut ctx = pContextInitData;
   // match ctx {
     // Some(ctx) => {
-      ctx.ctx.vtable = steam_api_context::get_vtable();
       debug!(?ctx);
       // FIXME: wtf is happening here
       let counter = GLOBAL_COUNTER.read().unwrap();
@@ -68,7 +67,7 @@ pub unsafe extern "C" fn SteamInternal_FindOrCreateUserInterface(
   pszVersion: *const c_char
 ) -> *mut c_void {
   debug!("SteamInternal_FindOrCreateUserInterface");
-  ptr::null_mut()
+  SteamAPI_ISteamClient_GetISteamGenericInterface(get_steam_client(), ptr::null_mut(), hSteamUser, SteamAPI_GetHSteamPipe(), pszVersion)
 }
 
 #[no_mangle]
