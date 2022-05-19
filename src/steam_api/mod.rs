@@ -5,7 +5,7 @@ use std::{ffi::c_void, os::raw::{c_char, c_int}, sync::{Mutex, Arc, RwLock}, ptr
 
 use tracing::{info, debug, error};
 
-use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamClient}, internal::GLOBAL_COUNTER, CLIENT};
+use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamClient}, internal::{GLOBAL_COUNTER, SteamInternal_CreateInterface}, CLIENT};
 
 use lazy_static::lazy_static;
 
@@ -13,6 +13,7 @@ mod apps;
 mod friends;
 mod game_search;
 mod game_server_stats;
+mod interfaces;
 mod matchmaking_servers;
 mod matchmaking;
 mod networking;
@@ -83,7 +84,15 @@ pub unsafe extern "C" fn SteamAPI_GetHSteamPipe() -> HSteamPipe {
 #[no_mangle]
 pub unsafe extern "C" fn SteamAPI_GetHSteamUser() -> HSteamUser {
   debug!("SteamAPI_GetHSteamUser");
-  0
+  1
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn SteamClient() -> *mut SteamClient {
+  debug!("SteamClient");
+  // load_old_interface_versions()
+  if !(*get_steam_client()).is_user_logged_in() { return ptr::null_mut(); }
+  return SteamInternal_CreateInterface(interfaces::OLD_CLIENT.as_ptr()) as _;
 }
 
 // FIXME: SteamUGC_v016
