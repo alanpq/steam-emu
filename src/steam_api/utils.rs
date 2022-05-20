@@ -4,6 +4,8 @@ use tracing::{info, debug, error};
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 
+use crate::uint32;
+
 #[has_vtable]
 #[derive(VTable, Debug)]
 pub struct SteamUtils {
@@ -15,13 +17,23 @@ impl SteamUtils {
   }
 }
 
+pub extern "fastcall" fn GetAppID() -> uint32 {
+  480
+}
+
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 4] = [
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
+    static mut VTABLE: [*mut usize; 10] = [
+      ptr::null_mut(), // GetSecondsSinceAppActive
+      ptr::null_mut(), // GetSecondsSinceComputerActive
+      ptr::null_mut(), // GetConnectedUniverse
+      ptr::null_mut(), // GetServerRealTime
+      ptr::null_mut(), // GetIPCountry
+      ptr::null_mut(), // GetImageSize
+      ptr::null_mut(), // GetImageRGBA
+      ptr::null_mut(), // GetCSERIPPort?
+      ptr::null_mut(), // GetCurrentBatteryPower
+      GetAppID as _, // GetAppID
     ];
     VTABLE.as_mut_ptr()
   }
