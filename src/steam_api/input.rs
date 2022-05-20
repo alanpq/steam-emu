@@ -4,8 +4,9 @@ use tracing::{info, debug, error};
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 
-use crate::uint64;
+use crate::{uint64, int32};
 
+pub type InputHandle_t = uint64; // used to refer to a specific controller. This handle will consistently identify a controller, even if it is disconnected and re-connected
 pub type InputActionSetHandle_t = uint64;
 pub type ControllerDigitalActionHandle_t = uint64;
 pub type ControllerAnalogActionHandle_t = uint64;
@@ -38,6 +39,14 @@ pub extern "fastcall" fn SteamAPI_ISteamInput_SetInputActionManifestFilePath(
   true // FIXME: implement
 }
 
+pub extern "fastcall" fn GetConnectedControllers(
+  self_: *mut SteamInput,
+  _edx: *mut c_void,
+  handles_out: *mut InputHandle_t, // TODO: investigate weird shit with cpp macro in real steam api
+) -> int32 {
+  0 // FIXME: implement
+}
+
 pub extern "fastcall" fn SteamAPI_ISteamInput_GetActionSetHandle(
   self_: *mut SteamInput,
   _edx: *mut c_void,
@@ -68,10 +77,10 @@ pub fn get_vtable() -> *mut *mut usize {
       SteamAPI_ISteamInput_Init as _,
       ptr::null_mut(),
       SteamAPI_ISteamInput_SetInputActionManifestFilePath as _,
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
-      ptr::null_mut(),
+      ptr::null_mut(), // RunFrame
+      ptr::null_mut(), // BWaitForData
+      ptr::null_mut(), // BNewDataAvailable
+      GetConnectedControllers as _, // GetConnectedControllers
       ptr::null_mut(),
       ptr::null_mut(),
       SteamAPI_ISteamInput_GetActionSetHandle as _,
