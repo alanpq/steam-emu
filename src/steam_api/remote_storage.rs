@@ -68,6 +68,7 @@ pub fn get_vtable() -> *mut *mut usize {
       ptr::null_mut(), // IsCloudEnabledForAccount
       ptr::null_mut(), // IsCloudEnabledForApp
       ptr::null_mut(), // SetCloudEnabledForApp
+      // ...
     ];
     VTABLE.as_mut_ptr()
   }

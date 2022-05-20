@@ -5,7 +5,7 @@ use std::{os::raw::{c_char, c_int}, ffi::{c_void, CStr}, ptr};
 
 use tracing::{info, debug, error};
 
-use crate::{HSteamPipe, HSteamUser, steam_api::{SteamUser, SteamFriends, SteamUtils, SteamScreenshots, SteamGameSearch, SteamRemoteStorage, SteamNetworking, SteamApps, SteamGameServerStats, SteamUserStats, SteamMatchmakingServers, SteamMatchmaking, SteamInput, SteamParentalSettings}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
+use crate::{HSteamPipe, HSteamUser, steam_api::{SteamUser, SteamFriends, SteamUtils, SteamScreenshots, SteamGameSearch, SteamRemoteStorage, SteamNetworking, SteamApps, SteamGameServerStats, SteamUserStats, SteamMatchmakingServers, SteamMatchmaking, SteamInput, SteamParentalSettings, SteamHTMLSurface}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
 
 use super::{SteamClient, EAccountType};
 
@@ -281,8 +281,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamHTMLSurface (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamHTMLSurface {
+  let p = ptr::addr_of_mut!((*self_).steam_html_surface);
   //debug!("GetISteamHTMLSurface -> {:?}", p);
   p
 }
