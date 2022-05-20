@@ -4,7 +4,9 @@ use tracing::{info, debug, error};
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 
-use crate::{CSteamID, uint64};
+use crate::{CSteamID, uint64, int32};
+
+use super::SteamAPICall_t;
 
 #[has_vtable]
 #[derive(VTable, Debug)]
@@ -34,13 +36,38 @@ unsafe extern "fastcall" fn GetSteamID(self_: *mut SteamUser, _edx: *mut c_void,
   (*self_).steam_id()
 }
 
+unsafe extern "fastcall" fn RequestEncryptedAppTicked(
+  self_: *mut SteamUser, _edx: *mut c_void,
+  p_data_to_include: *mut c_void,
+  cb_data_to_include: int32,
+) -> SteamAPICall_t {
+  0
+}
+
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 4] = [
+    static mut VTABLE: [*mut usize; 21] = [
       ptr::null_mut(),
       BLoggedOn as _,
       GetSteamID as _,
       ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      ptr::null_mut(),
+      RequestEncryptedAppTicked as _,
     ];
     VTABLE.as_mut_ptr()
   }
