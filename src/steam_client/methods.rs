@@ -5,7 +5,7 @@ use std::{os::raw::{c_char, c_int}, ffi::{c_void, CStr}, ptr};
 
 use tracing::{info, debug, error};
 
-use crate::{HSteamPipe, HSteamUser, steam_api::{SteamUser, SteamFriends, SteamUtils, SteamScreenshots, SteamGameSearch, SteamRemoteStorage, SteamNetworking, SteamApps, SteamGameServerStats, SteamUserStats, SteamMatchmakingServers, SteamMatchmaking, SteamInput, SteamParentalSettings, SteamHTMLSurface}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
+use crate::{HSteamPipe, HSteamUser,steam_api::*, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
 
 use super::{SteamClient, EAccountType};
 
@@ -209,8 +209,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamHTTP (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamHTTP {
+  let p = ptr::addr_of_mut!((*self_).steam_http);
   //debug!("GetISteamHTTP -> {:?}", p);
   p
 }
@@ -221,8 +221,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamController (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamController {
+  let p = ptr::addr_of_mut!((*self_).steam_controller);
   //debug!("GetISteamController -> {:?}", p);
   p
 }
@@ -233,8 +233,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUGC (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamUGC {
+  let p = ptr::addr_of_mut!((*self_).steam_ugc);
   //debug!("GetISteamUGC -> {:?}", p);
   p
 }
@@ -245,8 +245,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamAppList (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamAppList {
+  let p = ptr::addr_of_mut!((*self_).steam_app_list);
   //debug!("GetISteamAppList -> {:?}", p);
   p
 }
@@ -257,8 +257,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMusic (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamMusic {
+  let p = ptr::addr_of_mut!((*self_).steam_music);
   //debug!("GetISteamMusic -> {:?}", p);
   p
 }
@@ -269,8 +269,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamMusicRemote (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamMusicRemote {
+  let p = ptr::addr_of_mut!((*self_).steam_music_remote);
   //debug!("GetISteamMusicRemote -> {:?}", p);
   p
 }
@@ -293,8 +293,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamInventory (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamInventory {
+  let p = ptr::addr_of_mut!((*self_).steam_inventory);
   //debug!("GetISteamInventory -> {:?}", p);
   p
 }
@@ -305,8 +305,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamVideo (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamVideo {
+  let p = ptr::addr_of_mut!((*self_).steam_video);
   //debug!("GetISteamVideo -> {:?}", p);
   p
 }
@@ -343,8 +343,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamParties (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamParties {
+  let p = ptr::addr_of_mut!((*self_).steam_parties);
   //debug!("GetISteamParties -> {:?}", p);
   p
 }
@@ -356,8 +356,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamRemotePlay (
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
-) -> *mut SteamGameSearch {
-  let p = ptr::addr_of_mut!((*self_).steam_game_search);
+) -> *mut SteamRemotePlay {
+  let p = ptr::addr_of_mut!((*self_).steam_remote_play);
   //debug!("GetISteamRemotePlay -> {:?}", p);
   p
 }
