@@ -1,4 +1,4 @@
-use std::{os::raw::c_char, ffi::c_void, ptr};
+use std::{os::raw::{c_char, c_float}, ffi::c_void, ptr};
 use tracing::{info, debug, error};
 
 use vtables::VTable;
@@ -10,6 +10,73 @@ pub type InputHandle_t = uint64; // used to refer to a specific controller. This
 pub type InputActionSetHandle_t = uint64;
 pub type ControllerDigitalActionHandle_t = uint64;
 pub type ControllerAnalogActionHandle_t = uint64;
+
+pub type InputDigitalActionHandle_t = uint64;
+pub type InputAnalogActionHandle_t = uint64;
+
+#[repr(C)]
+pub enum EInputSource {
+	k_EInputSource_None,
+	k_EInputSource_LeftTrackpad,
+	k_EInputSource_RightTrackpad,
+	k_EInputSource_Joystick,
+	k_EInputSource_ABXY,
+	k_EInputSource_Switch,
+	k_EInputSource_LeftTrigger,
+	k_EInputSource_RightTrigger,
+	k_EInputSource_LeftBumper,
+	k_EInputSource_RightBumper,
+	k_EInputSource_Gyro,
+	k_EInputSource_CenterTrackpad,		// PS4
+	k_EInputSource_RightJoystick,		// Traditional Controllers
+	k_EInputSource_DPad,				// Traditional Controllers
+	k_EInputSource_Key,                 // Keyboards with scan codes - Unused
+	k_EInputSource_Mouse,               // Traditional mouse - Unused
+	k_EInputSource_LeftGyro,			// Secondary Gyro - Switch - Unused
+	k_EInputSource_Count
+}
+
+#[repr(C)]
+pub enum EInputSourceMode {
+	k_EInputSourceMode_None,
+	k_EInputSourceMode_Dpad,
+	k_EInputSourceMode_Buttons,
+	k_EInputSourceMode_FourButtons,
+	k_EInputSourceMode_AbsoluteMouse,
+	k_EInputSourceMode_RelativeMouse,
+	k_EInputSourceMode_JoystickMove,
+	k_EInputSourceMode_JoystickMouse,
+	k_EInputSourceMode_JoystickCamera,
+	k_EInputSourceMode_ScrollWheel,
+	k_EInputSourceMode_Trigger,
+	k_EInputSourceMode_TouchMenu,
+	k_EInputSourceMode_MouseJoystick,
+	k_EInputSourceMode_MouseRegion,
+	k_EInputSourceMode_RadialMenu,
+	k_EInputSourceMode_SingleButton,
+	k_EInputSourceMode_Switches
+}
+
+#[repr(C)]
+pub struct InputAnalogActionData_t {
+	// Type of data coming from this action, this will match what got specified in the action set
+	eMode: EInputSourceMode,
+	
+	// The current state of this action; will be delta updates for mouse actions
+	x: c_float,
+  y: c_float,
+	
+	// Whether or not this action is currently available to be bound in the active action set
+	bActive: bool,
+}
+
+#[repr(C)]
+pub struct InputDigitalActionData_t {
+	// The current state of this action; will be true if currently pressed
+	bState: bool,
+	// Whether or not this action is currently available to be bound in the active action set
+	bActive: bool,
+}
 
 #[has_vtable]
 #[derive(VTable, Debug)]
@@ -63,6 +130,16 @@ pub extern "fastcall" fn SteamAPI_ISteamInput_GetDigitalActionHandle(
   0 // FIXME: implement
 }
 
+pub extern "fastcall" fn GetDigitalActionData(
+  self_: *mut SteamInput,
+  _edx: *mut c_void,
+  input_handle: InputHandle_t,
+  digital_action_handle: InputDigitalActionHandle_t,
+  _test: *mut c_void,
+) -> InputDigitalActionData_t {
+  InputDigitalActionData_t { bState: false, bActive: false }
+}
+
 pub extern "fastcall" fn SteamAPI_ISteamInput_GetAnalogActionHandle(
   self_: *mut SteamInput,
   _edx: *mut c_void,
@@ -71,9 +148,18 @@ pub extern "fastcall" fn SteamAPI_ISteamInput_GetAnalogActionHandle(
   0 // FIXME: implement
 }
 
+pub extern "fastcall" fn GetAnalogActionData(
+  self_: *mut SteamInput,
+  _edx: *mut c_void,
+  input_handle: InputHandle_t,
+  analog_action_handle: InputAnalogActionHandle_t
+) -> InputAnalogActionData_t {
+  InputAnalogActionData_t { eMode: EInputSourceMode::k_EInputSourceMode_None, x: 0.0, y: 0.0, bActive: false }
+}
+
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 21] = [
+    static mut VTABLE: [*mut usize; 22] = [
       SteamAPI_ISteamInput_Init as _,
       ptr::null_mut(),
       SteamAPI_ISteamInput_SetInputActionManifestFilePath as _,
@@ -91,10 +177,11 @@ pub fn get_vtable() -> *mut *mut usize {
       ptr::null_mut(),
       ptr::null_mut(),
       SteamAPI_ISteamInput_GetDigitalActionHandle as _,
-      ptr::null_mut(),
+      GetDigitalActionData as _, // GetDigitalActionData
       ptr::null_mut(),
       ptr::null_mut(),
       SteamAPI_ISteamInput_GetAnalogActionHandle as _,
+      GetAnalogActionData as _, // GetAnalogActionData
     ];
     VTABLE.as_mut_ptr()
   }
