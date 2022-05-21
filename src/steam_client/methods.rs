@@ -5,7 +5,7 @@ use std::{os::raw::{c_char, c_int}, ffi::{c_void, CStr}, ptr};
 
 use tracing::{info, debug, error};
 
-use crate::{HSteamPipe, HSteamUser,steam_api::*, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
+use crate::{HSteamPipe, HSteamUser,steam_api::{*, networking::*}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
 
 use super::{SteamClient, EAccountType};
 

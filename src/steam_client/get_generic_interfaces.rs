@@ -3,7 +3,7 @@ use std::{os::raw::c_char, ffi::c_void, ptr};
 
 use tracing::debug;
 
-use crate::steam_client::{SteamAPI_ISteamClient_GetISteamApps, SteamAPI_ISteamClient_GetISteamInput, SteamAPI_ISteamClient_GetISteamParentalSettings, SteamAPI_ISteamClient_GetISteamUtils, SteamAPI_ISteamClient_GetISteamUserStats, SteamAPI_ISteamClient_GetISteamFriends, SteamAPI_ISteamClient_GetISteamRemoteStorage, SteamAPI_ISteamClient_GetISteamHTMLSurface, SteamAPI_ISteamClient_GetISteamInventory, SteamAPI_ISteamClient_GetISteamUGC};
+use crate::steam_client::{SteamAPI_ISteamClient_GetISteamApps, SteamAPI_ISteamClient_GetISteamInput, SteamAPI_ISteamClient_GetISteamParentalSettings, SteamAPI_ISteamClient_GetISteamUtils, SteamAPI_ISteamClient_GetISteamUserStats, SteamAPI_ISteamClient_GetISteamFriends, SteamAPI_ISteamClient_GetISteamRemoteStorage, SteamAPI_ISteamClient_GetISteamHTMLSurface, SteamAPI_ISteamClient_GetISteamInventory, SteamAPI_ISteamClient_GetISteamUGC, STEAM_PIPES};
 use crate::{HSteamUser, HSteamPipe};
 
 use super::SteamClient;
@@ -20,6 +20,31 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
 ) -> *mut c_void {
   let version = CStr::from_ptr(pchVersion).to_str().unwrap();
   debug!("GetISteamGenericInterface '{:?}'", version);
+  debug!(hSteamUser, hSteamPipe);
+  let server;
+  {
+    let pipes = STEAM_PIPES.lock().unwrap();
+    server = match pipes[&hSteamPipe] {
+        crate::steam_client::SteamPipe::Server => true,
+        _ => false
+    };
+
+  }
+  debug!(server);
+  debug!("--");
+
+  if !server && !version.starts_with("SteamNetworkingUtils") && !version.starts_with("SteamUtils")
+    && hSteamUser == 0 {
+      debug!("returning early!");
+      return ptr::null_mut();
+  }
+
+  if version.starts_with("SteamNetworkingSockets") {
+    return match server {
+      true  => ptr::addr_of_mut!((*self_).gs_networking_sockets   ) as _,
+      false => ptr::addr_of_mut!((*self_).steam_networking_sockets) as _,
+    }
+  }
 
   // FIXME: there are so many interfaces yet to be added here
   if version.starts_with("SteamUser") {

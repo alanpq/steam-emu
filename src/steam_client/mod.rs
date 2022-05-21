@@ -5,7 +5,7 @@ use tracing::{info, debug, error};
 use lazy_static::lazy_static;
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
-use crate::{HSteamPipe, HSteamUser, int32, steam_api::*};
+use crate::{HSteamPipe, HSteamUser, int32, steam_api::{*, networking::*}};
 
 mod methods;
 mod get_generic_interfaces;
@@ -50,32 +50,49 @@ pub struct SteamClient {
   server_init: bool,
   user_logged_in: bool,
 
-  pub steam_app_list: SteamAppList,
-  pub steam_apps: SteamApps,
-  pub steam_controller: SteamController,
+  // client stuff
+  pub steam_user: SteamUser,
   pub steam_friends: SteamFriends,
-  pub steam_game_search: SteamGameSearch,
-  pub steam_game_server_stats: SteamGameServerStats,
-  pub steam_html_surface: SteamHTMLSurface,
-  pub steam_http: SteamHTTP,
-  pub steam_input: SteamInput,
-  pub steam_inventory: SteamInventory,
-  pub steam_matchmaking_servers: SteamMatchmakingServers,
+  pub steam_utils: SteamUtils,
   pub steam_matchmaking: SteamMatchmaking,
-  pub steam_music_remote: SteamMusicRemote,
-  pub steam_music: SteamMusic,
-  pub steam_networking_utils: SteamNetworkingUtils,
+  pub steam_matchmaking_servers: SteamMatchmakingServers,
+  pub steam_user_stats: SteamUserStats,
+  pub steam_apps: SteamApps,
+
   pub steam_networking: SteamNetworking,
-  pub steam_parental_settings: SteamParentalSettings,
-  pub steam_parties: SteamParties,
-  pub steam_remote_play: SteamRemotePlay,
+  pub steam_networking_sockets: SteamNetworkingSockets,
+  pub steam_networking_messages: SteamNetworkingMessages,
+
   pub steam_remote_storage: SteamRemoteStorage,
   pub steam_screenshots: SteamScreenshots,
+  pub steam_http: SteamHTTP,
+  pub steam_controller: SteamController,
   pub steam_ugc: SteamUGC,
-  pub steam_user_stats: SteamUserStats,
-  pub steam_user: SteamUser,
-  pub steam_utils: SteamUtils,
+  pub steam_app_list: SteamAppList,
+  pub steam_music: SteamMusic,
+  pub steam_music_remote: SteamMusicRemote,
+  pub steam_html_surface: SteamHTMLSurface,
+  pub steam_inventory: SteamInventory,
   pub steam_video: SteamVideo,
+  pub steam_parental_settings: SteamParentalSettings,
+  pub steam_game_search: SteamGameSearch,
+  pub steam_input: SteamInput,
+  pub steam_networking_utils: SteamNetworkingUtils,
+  pub steam_parties: SteamParties,
+  pub steam_remote_play: SteamRemotePlay,
+  
+  // gameserver stuff
+  pub gs_utils: SteamUtils,
+  pub steam_game_server_stats: SteamGameServerStats,
+  pub gs_networking: SteamNetworking,
+  pub gs_http: SteamHTTP,
+  pub gs_inventory: SteamInventory,
+  pub gs_ugc: SteamUGC,
+  pub gs_apps: SteamApps,
+  pub gs_networking_sockets: SteamNetworkingSockets,
+  pub gs_net_messages: SteamNetworkingMessages,
+  // pub gs_game_coordinator: SteamGameCoordinator,
+  // pub masterserver_updater: SteamMasterserverUpdater,
 }
 
 impl SteamClient {
@@ -103,6 +120,8 @@ impl SteamClient {
       steam_music: SteamMusic::new(),
       steam_networking_utils: SteamNetworkingUtils::new(),
       steam_networking: SteamNetworking::new(),
+      steam_networking_sockets: SteamNetworkingSockets::new(),
+      steam_networking_messages: SteamNetworkingMessages::new(),
       steam_parental_settings: SteamParentalSettings::new(),
       steam_parties: SteamParties::new(),
       steam_remote_play: SteamRemotePlay::new(),
@@ -113,6 +132,15 @@ impl SteamClient {
       steam_user: SteamUser::new(),
       steam_utils: SteamUtils::new(),
       steam_video: SteamVideo::new(),
+      
+      gs_utils: SteamUtils::new(),
+      gs_networking: SteamNetworking::new(),
+      gs_http: SteamHTTP::new(),
+      gs_inventory: SteamInventory::new(),
+      gs_ugc: SteamUGC::new(),
+      gs_apps: SteamApps::new(),
+      gs_networking_sockets: SteamNetworkingSockets::new(),
+      gs_net_messages: SteamNetworkingMessages::new(),
     }
   }
 

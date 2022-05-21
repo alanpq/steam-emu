@@ -24,8 +24,6 @@ mod matchmaking_servers;
 mod matchmaking;
 mod music_remote;
 mod music;
-mod networking_utils;
-mod networking;
 mod parental_settings;
 mod parties;
 mod remote_play;
@@ -51,8 +49,6 @@ pub use matchmaking_servers::*;
 pub use matchmaking::*;
 pub use music_remote::*;
 pub use music::*;
-pub use networking_utils::*;
-pub use networking::*;
 pub use parental_settings::*;
 pub use parties::*;
 pub use remote_play::*;
@@ -63,6 +59,8 @@ pub use user_stats::*;
 pub use user::*;
 pub use utils::*;
 pub use video::*;
+
+pub mod networking;
 
 lazy_static! {
   static ref USER_STEAM_PIPE: RwLock<HSteamPipe> = RwLock::new(0);
