@@ -41,9 +41,18 @@ pub extern "fastcall" fn GetFriendsGroupCount(
   0
 }
 
+pub extern "fastcall" fn SetRichPresence(
+  self_: *mut SteamFriends,
+  _edx: *mut c_void,
+  key: *const c_char,
+  val: *const c_char
+) -> bool {
+  false
+}
+
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 15] = [
+    static mut VTABLE: [*mut usize; 44] = [
       ptr::null_mut(), // GetPersonaName
       ptr::null_mut(), // SetPersonaName
       ptr::null_mut(), // GetPersonaState
@@ -59,6 +68,35 @@ pub fn get_vtable() -> *mut *mut usize {
       GetFriendsGroupCount as _, // GetFriendsGroupCount
       ptr::null_mut(), // GetFriendsGroupIDByIndex
       ptr::null_mut(), // GetFriendsGroupName
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), //
+      SetRichPresence as _, // SetRichPresence
       // ...
     ];
     VTABLE.as_mut_ptr()
