@@ -21,9 +21,13 @@ pub extern "fastcall" fn GetAppID() -> uint32 {
   480
 }
 
+pub extern "fastcall" fn IsSteamChinaLauncher() -> bool {
+  false
+}
+
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 10] = [
+    static mut VTABLE: [*mut usize; 31] = [
       ptr::null_mut(), // GetSecondsSinceAppActive
       ptr::null_mut(), // GetSecondsSinceComputerActive
       ptr::null_mut(), // GetConnectedUniverse
@@ -34,6 +38,27 @@ pub fn get_vtable() -> *mut *mut usize {
       ptr::null_mut(), // GetCSERIPPort?
       ptr::null_mut(), // GetCurrentBatteryPower
       GetAppID as _, // GetAppID
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      IsSteamChinaLauncher as _, // 
     ];
     VTABLE.as_mut_ptr()
   }
