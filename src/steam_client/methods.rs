@@ -5,15 +5,19 @@ use std::{os::raw::{c_char, c_int}, ffi::{c_void, CStr}, ptr};
 
 use tracing::{info, debug, error};
 
-use crate::{HSteamPipe, HSteamUser,steam_api::{*, networking::*}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
+use crate::{HSteamPipe, HSteamUser,steam_api::{*, networking::*}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface, SERVER_HSTEAMUSER};
 
-use super::{SteamClient, EAccountType};
+use super::{SteamClient, EAccountType, STEAM_PIPES};
 
 #[allow(non_camel_case_types)]
 
-extern "C" fn SteamAPI_ISteamClient_CreateSteamPipe(self_: *mut SteamClient) -> HSteamPipe {
+unsafe extern "C" fn SteamAPI_ISteamClient_CreateSteamPipe(self_: *mut SteamClient) -> HSteamPipe {
   debug!("SteamAPI_ISteamClient_CreateSteamPipe");
-  0
+  let self_ = &mut *self_;
+  let pipe = self_.steam_pipe_counter;
+  self_.steam_pipe_counter += 1;
+  self_.steam_pipes.insert(pipe, crate::steam_client::SteamPipe::NoUser);
+  pipe
 }
 
 extern "C" fn SteamAPI_ISteamClient_BReleaseSteamPipe(
@@ -30,13 +34,22 @@ extern "C" fn SteamAPI_ISteamClient_ConnectToGlobalUser
   0
 }
 
-extern "C" fn SteamAPI_ISteamClient_CreateLocalUser(
+pub unsafe extern "C" fn SteamAPI_ISteamClient_CreateLocalUser(
   self_: *mut SteamClient,
   hSteamPipe: *mut HSteamPipe,
   eAccountType:EAccountType
 ) -> HSteamUser {
   debug!("SteamAPI_ISteamClient_CreateLocalUser");
-  0
+  let self_ = &mut *self_;
+
+  self_.init_server();
+  let pipe = SteamAPI_ISteamClient_CreateSteamPipe(self_);
+  if !hSteamPipe.is_null() {
+    *hSteamPipe = pipe;
+  }
+  self_.steam_pipes.insert(pipe, crate::steam_client::SteamPipe::Server);
+  self_.steamclient_server_inited = true;
+  SERVER_HSTEAMUSER
 }
 
 extern "C" fn SteamAPI_ISteamClient_ReleaseUser(
@@ -57,6 +70,22 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamUser(
   let p = ptr::addr_of_mut!((*self_).steam_user);
   //debug!("GetISteamUser -> {:?}", p);
   ptr::addr_of_mut!((*self_).steam_user)
+}
+
+pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGameServer(
+  self_: *mut SteamClient,
+  _edx: *mut c_void,
+  hSteamUser:HSteamUser,
+  hSteamPipe:HSteamPipe,
+  pchVersion: *const c_char
+) ->  *mut SteamGameServer {
+  let p = ptr::addr_of_mut!((*self_).steam_user);
+  debug!("GetISteamUser -> {:?}", p);
+  if !(*self_).steam_pipes.contains_key(&hSteamPipe) || hSteamUser == 0 {
+    return ptr::null_mut(); // FIXME: figure out why this fucks shit
+  }
+  // TODO: ipv6 stuff?
+  ptr::addr_of_mut!((*self_).gs)
 }
 
 pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamFriends(
@@ -384,7 +413,7 @@ pub fn get_vtable() -> *mut *mut usize {
       SteamAPI_ISteamClient_CreateLocalUser as _,
       SteamAPI_ISteamClient_ReleaseUser as _,
       SteamAPI_ISteamClient_GetISteamUser as _,
-      ptr::null_mut(), // GetISteamGameServer
+      SteamAPI_ISteamClient_GetISteamGameServer as _, // GetISteamGameServer
       ptr::null_mut(), // SetLocalIPBinding
       SteamAPI_ISteamClient_GetISteamFriends as _,
       SteamAPI_ISteamClient_GetISteamUtils as _,

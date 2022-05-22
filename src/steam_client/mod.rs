@@ -5,7 +5,7 @@ use tracing::{info, debug, error};
 use lazy_static::lazy_static;
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
-use crate::{HSteamPipe, HSteamUser, int32, steam_api::{*, networking::*}};
+use crate::{HSteamPipe, HSteamUser, int32, steam_api::{*, networking::*}, uint32};
 
 mod methods;
 mod get_generic_interfaces;
@@ -14,6 +14,8 @@ pub use get_generic_interfaces::*;
 
 const CLIENT_HSTEAMUSER: HSteamUser = 1;
 
+#[repr(C)]
+#[derive(Debug)]
 pub enum SteamPipe {
   NoUser,
   Client,
@@ -48,7 +50,11 @@ pub struct SteamClient {
   pub vtable: *mut *mut usize,
   test: int32,
   server_init: bool,
+  steamclient_server_inited: bool,
   user_logged_in: bool,
+
+  steam_pipe_counter: HSteamPipe,
+  steam_pipes: HashMap<HSteamPipe, SteamPipe>,
 
   // client stuff
   pub steam_user: SteamUser,
@@ -103,7 +109,11 @@ impl SteamClient {
       vtable: methods::get_vtable(),
       test: 48879,
       server_init: false,
+      steamclient_server_inited: false,
       user_logged_in: false,
+
+      steam_pipe_counter: 1,
+      steam_pipes: HashMap::new(),
 
       steam_app_list: SteamAppList::new(),
       steam_apps: SteamApps::new(),

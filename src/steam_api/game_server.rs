@@ -1,10 +1,10 @@
-use std::{os::raw::c_char, ffi::c_void, ptr};
+use std::{os::raw::c_char, ffi::c_void, ptr, sync::Mutex};
 use tracing::{info, debug, error};
 
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 
-use crate::{uint32, uint16};
+use crate::{uint32, uint16, HSteamPipe};
 
 use super::AppId;
 

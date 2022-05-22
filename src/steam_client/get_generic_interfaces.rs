@@ -3,7 +3,7 @@ use std::{os::raw::c_char, ffi::c_void, ptr};
 
 use tracing::debug;
 
-use crate::steam_client::{SteamAPI_ISteamClient_GetISteamApps, SteamAPI_ISteamClient_GetISteamInput, SteamAPI_ISteamClient_GetISteamParentalSettings, SteamAPI_ISteamClient_GetISteamUtils, SteamAPI_ISteamClient_GetISteamUserStats, SteamAPI_ISteamClient_GetISteamFriends, SteamAPI_ISteamClient_GetISteamRemoteStorage, SteamAPI_ISteamClient_GetISteamHTMLSurface, SteamAPI_ISteamClient_GetISteamInventory, SteamAPI_ISteamClient_GetISteamUGC, STEAM_PIPES};
+use crate::steam_client::*;
 use crate::{HSteamUser, HSteamPipe};
 
 use super::SteamClient;
@@ -19,17 +19,18 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
   pchVersion: *const c_char
 ) -> *mut c_void {
   let version = CStr::from_ptr(pchVersion).to_str().unwrap();
-  debug!("GetISteamGenericInterface '{:?}'", version);
-  debug!(hSteamUser, hSteamPipe);
-  let server;
-  {
-    let pipes = STEAM_PIPES.lock().unwrap();
-    server = match pipes[&hSteamPipe] {
-        crate::steam_client::SteamPipe::Server => true,
-        _ => false
-    };
-
+  if self_.is_null() {
+    error!("null reference to self!");
   }
+  let self_s = &mut *self_;
+
+  debug!("GetISteamGenericInterface '{:?}'", version);
+  debug!(?self_);
+  debug!(hSteamUser, hSteamPipe);
+  let server = match (&self_s.steam_pipes).get(&hSteamPipe).unwrap_or(&SteamPipe::NoUser) {
+      SteamPipe::Server => true,
+      _ => false
+  };
   debug!(server);
   debug!("--");
 
@@ -41,8 +42,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
 
   if version.starts_with("SteamNetworkingSockets") {
     return match server {
-      true  => ptr::addr_of_mut!((*self_).gs_networking_sockets   ) as _,
-      false => ptr::addr_of_mut!((*self_).steam_networking_sockets) as _,
+      true  => ptr::addr_of_mut!(self_s.gs_networking_sockets   ) as _,
+      false => ptr::addr_of_mut!(self_s.steam_networking_sockets) as _,
     }
   }
 
@@ -56,7 +57,9 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
   } else if version.starts_with("SteamFriends") {
     return SteamAPI_ISteamClient_GetISteamFriends(self_, _edx, hSteamUser, hSteamPipe, pchVersion) as _;
   } else if version.starts_with("SteamNetworkingUtils") {
-    return ptr::addr_of_mut!((*self_).steam_networking_utils) as _;
+    return ptr::addr_of_mut!(self_s.steam_networking_utils) as _;
+  } else if version.starts_with("SteamGameServer") {
+    return SteamAPI_ISteamClient_GetISteamGameServer(self_, _edx, hSteamUser, hSteamPipe, pchVersion) as _;
   } else if version.starts_with("STEAMAPPS_INTERFACE_VERSION") {
     return SteamAPI_ISteamClient_GetISteamApps(self_, _edx, hSteamUser, hSteamPipe, pchVersion) as _;
   } else if version.starts_with("STEAMPARENTALSETTINGS_INTERFACE_VERSION") {

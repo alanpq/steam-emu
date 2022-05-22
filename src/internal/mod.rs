@@ -1,6 +1,6 @@
 use std::{os::raw::c_char, ffi::{c_void, CStr}, ptr::{null, self}, sync::RwLock, intrinsics::transmute};
 
-use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client, SteamAPI_GetHSteamPipe, self}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
+use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client, SteamAPI_GetHSteamPipe, self}, steam_client::*, SERVER_STEAM_PIPE};
 use tracing::{info, debug, error, span, Level};
 
 use lazy_static::lazy_static;
@@ -81,7 +81,6 @@ pub unsafe extern "C" fn SteamInternal_FindOrCreateGameServerInterface(
   SteamAPI_ISteamClient_GetISteamGenericInterface(get_steam_client(), ptr::null_mut(), hSteamUser, SteamAPI_GetHSteamPipe(), pszVersion)
 }
 
-
 #[no_mangle]
 pub extern "C" fn SteamInternal_GameServer_Init(
   unIP: uint32,
@@ -93,6 +92,9 @@ pub extern "C" fn SteamInternal_GameServer_Init(
 ) -> bool {
   debug!("SteamInternal_GameServer_Init");
   let client = unsafe {&mut *get_steam_client()};
+  unsafe {
+    SteamAPI_ISteamClient_CreateLocalUser(get_steam_client(), SERVER_STEAM_PIPE, EAccountType::k_EAccountTypeGameServer);
+  }
   { // TODO: replace this with atomic u64
     let mut counter = GLOBAL_COUNTER.write().unwrap();
     *counter += 1;

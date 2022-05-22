@@ -18,8 +18,12 @@ use std::{net::TcpStream, sync::Mutex, os::raw::{c_int, c_uint, c_short, c_ushor
 use steam_client::SteamClient;
 use tracing::{info, debug, Level};
 
+pub const CLIENT_HSTEAMUSER: HSteamUser = 1;
+pub const SERVER_HSTEAMUSER: HSteamUser = 1;
+
 
 pub static mut CLIENT: *mut SteamClient = ptr::null_mut();
+pub static mut SERVER_STEAM_PIPE: *mut HSteamPipe = ptr::null_mut();
 
 #[ctor::ctor]
 fn ctor() {
@@ -29,6 +33,7 @@ fn ctor() {
   let steam_client = Box::new(SteamClient::new());
   unsafe {
     CLIENT = Box::leak(steam_client);
+    SERVER_STEAM_PIPE = Box::leak(Box::new(0));
   }
 
   info!("steam_api.dll loaded!");

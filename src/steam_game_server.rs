@@ -1,4 +1,4 @@
-use crate::{int32, HSteamUser, HSteamPipe};
+use crate::{int32, HSteamUser, HSteamPipe, SERVER_HSTEAMUSER, steam_api::get_steam_client};
 
 use tracing::{info, debug, error};
 #[no_mangle]
@@ -14,9 +14,12 @@ pub extern "C" fn SteamGameServer_RunCallbacks() {
 }
 
 #[no_mangle]
-pub extern "C" fn SteamGameServer_GetHSteamUser() -> HSteamUser {
+pub unsafe extern "C" fn SteamGameServer_GetHSteamUser() -> HSteamUser {
   debug!("SteamGameServer_GetHSteamUser");
-  0 // FIXME: implement
+  match (*get_steam_client()).is_server_init() {
+    true => SERVER_HSTEAMUSER,
+    false => 0
+  }
 }
 
 #[no_mangle]
