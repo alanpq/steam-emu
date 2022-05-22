@@ -51,6 +51,13 @@ impl SteamUserStats {
   }
 }
 
+pub extern "fastcall" fn RequestCurrentStats(
+  self_: *mut SteamUserStats,
+  _edx: *mut c_void,
+) -> bool {
+  true
+}
+
 // FIXME: move this elsewhere
 // TODO: cry (this is async related)
 pub type SteamAPICall = uint64;
@@ -68,7 +75,7 @@ pub extern "fastcall" fn FindOrCreateLeaderboard(
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
     static mut VTABLE: [*mut usize; 23] = [
-      ptr::null_mut(),
+      RequestCurrentStats as _,
       ptr::null_mut(),
       ptr::null_mut(),
       ptr::null_mut(),
