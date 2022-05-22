@@ -3,3 +3,5 @@
 
 spacewar/*
 sdk/*
+
+*.log
