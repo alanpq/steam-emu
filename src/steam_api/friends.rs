@@ -1,10 +1,10 @@
-use std::{os::raw::c_char, ffi::c_void, ptr};
+use std::{os::raw::c_char, ffi::{c_void, CStr, CString}, ptr};
 use tracing::{info, debug, error};
 
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 
-use crate::int32;
+use crate::{int32, CSteamID};
 
 #[has_vtable]
 #[derive(VTable, Debug)]
@@ -34,6 +34,16 @@ pub extern "fastcall" fn GetFriendByIndex(
   ptr::null_mut()
 }
 
+pub extern "fastcall" fn GetFriendPersonaName(
+  self_: *mut SteamFriends,
+  _edx: *mut c_void,
+  friend_id: CSteamID,
+) -> *const c_char {
+  // XX: this is a memory leak
+  let str = Box::leak(Box::new(CString::new("friend").unwrap()));
+  str.as_ptr()
+}
+
 pub extern "fastcall" fn GetFriendsGroupCount(
   self_: *mut SteamFriends,
   _edx: *mut c_void,
@@ -60,7 +70,7 @@ pub fn get_vtable() -> *mut *mut usize {
       GetFriendByIndex as _, // GetFriendByIndex
       ptr::null_mut(), // GetFriendRelationship
       ptr::null_mut(), // GetFriendPersonaState
-      ptr::null_mut(), // GetFriendPersonaName
+      GetFriendPersonaName as _, // GetFriendPersonaName
       ptr::null_mut(), // GetFriendGamePlayed
       ptr::null_mut(), // GetFriendPersonaNameHistory
       ptr::null_mut(), // GetFriendSteamLevel
