@@ -5,7 +5,7 @@ use tracing::{info, debug, error};
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 
-use crate::{uint32, uint16, HSteamPipe};
+use crate::{uint32, uint16, HSteamPipe, int32};
 
 use super::AppId;
 
@@ -113,6 +113,25 @@ pub unsafe extern "fastcall" fn LogOnAnonymous(
   // FIXME: implement
 }
 
+pub unsafe extern "fastcall" fn set_int_stub(
+  self_: *mut SteamGameServer,
+  _edx: *mut c_void,
+  val: int32,
+) {
+}
+pub unsafe extern "fastcall" fn set_str_stub(
+  self_: *mut SteamGameServer,
+  _edx: *mut c_void,
+  val: *const c_char,
+) {
+}
+pub unsafe extern "fastcall" fn set_bool_stub(
+  self_: *mut SteamGameServer,
+  _edx: *mut c_void,
+  val: bool,
+) {
+}
+
 pub extern "fastcall" fn SetAdvertiseServerActive(
   self_: *mut SteamGameServer,
   _edx: *mut c_void,
@@ -141,18 +160,18 @@ pub fn get_vtable() -> *mut *mut usize {
       ptr::null_mut(), // GetSteamID
       ptr::null_mut(), // WasRestartRequested
 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
-      ptr::null_mut(), // 
+      set_int_stub as _, // SetMaxPlayerCount
+      set_int_stub as _, // SetBotPlayerCount
+      set_str_stub as _, // SetServerName
+      set_str_stub as _, // SetMapName
+      set_bool_stub as _, // SetPasswordProtected
+      ptr::null_mut(), // SetSpectatorPort
+      ptr::null_mut(), // SetSpectatorServerName
+      ptr::null_mut(), // ClearAllKeyValues
+      ptr::null_mut(), // SetKeyValue
+      ptr::null_mut(), // SetGameTags
+      ptr::null_mut(), // SetGameData
+      ptr::null_mut(), // SetRegion
       SetAdvertiseServerActive as _, // SetAdvertiseServerActive
       // ...
     ];
