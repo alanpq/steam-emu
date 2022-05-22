@@ -82,6 +82,7 @@ pub struct SteamClient {
   pub steam_remote_play: SteamRemotePlay,
   
   // gameserver stuff
+  pub gs: SteamGameServer,
   pub gs_utils: SteamUtils,
   pub steam_game_server_stats: SteamGameServerStats,
   pub gs_networking: SteamNetworking,
@@ -133,6 +134,7 @@ impl SteamClient {
       steam_utils: SteamUtils::new(),
       steam_video: SteamVideo::new(),
       
+      gs: SteamGameServer::new(),
       gs_utils: SteamUtils::new(),
       gs_networking: SteamNetworking::new(),
       gs_http: SteamHTTP::new(),

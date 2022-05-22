@@ -1,6 +1,6 @@
 use std::{os::raw::c_char, ffi::{c_void, CStr}, ptr::{null, self}, sync::RwLock, intrinsics::transmute};
 
-use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client, SteamAPI_GetHSteamPipe}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
+use crate::{uint32, uint16, HSteamUser, uintp, steam_api::{get_steam_client, SteamAPI_GetHSteamPipe, self}, steam_client::SteamAPI_ISteamClient_GetISteamGenericInterface};
 use tracing::{info, debug, error, span, Level};
 
 use lazy_static::lazy_static;
@@ -92,7 +92,18 @@ pub extern "C" fn SteamInternal_GameServer_Init(
   pchVersionString: *const c_char
 ) -> bool {
   debug!("SteamInternal_GameServer_Init");
-  false
+  let client = unsafe {&mut *get_steam_client()};
+  { // TODO: replace this with atomic u64
+    let mut counter = GLOBAL_COUNTER.write().unwrap();
+    *counter += 1;
+  }
+  //g_pSteamClientGameServer is only used in pre 1.37 (where the interface versions are not provided by the game)
+  // g_pSteamClientGameServer = SteamGameServerClient();
+  let un_flags = match eServerMode {
+    // EServerMode::eServerModeAuthenticationAndSecure => k_unServerFlagSecure // TODO: implement (vac related)
+    _ => 0
+  };
+  steam_api::InitGameServer(ptr::addr_of_mut!(client.gs), ptr::null_mut(), unIP, usGamePort, usQueryPort, un_flags, 0, pchVersionString)
 }
 
 #[no_mangle]
