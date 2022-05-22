@@ -113,11 +113,20 @@ pub unsafe extern "fastcall" fn LogOnAnonymous(
   // FIXME: implement
 }
 
+pub extern "fastcall" fn SetAdvertiseServerActive(
+  self_: *mut SteamGameServer,
+  _edx: *mut c_void,
+  active: bool,
+) {
+  // FIXME: implement
+}
+
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 11] = [
+    static mut VTABLE: [*mut usize; 25] = [
       // Basic server data.  These properties, if set, must be set before before calling LogOn.  They
       // may not be changed after logged in.
+      ptr::null_mut(), // InitGameServer?
       SetProduct as _, // SetProduct
       SetGameDescription as _, // SetGameDescription
       SetModDir as _, // SetModDir
@@ -131,6 +140,20 @@ pub fn get_vtable() -> *mut *mut usize {
       ptr::null_mut(), // BSecure
       ptr::null_mut(), // GetSteamID
       ptr::null_mut(), // WasRestartRequested
+
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      ptr::null_mut(), // 
+      SetAdvertiseServerActive as _, // SetAdvertiseServerActive
       // ...
     ];
     VTABLE.as_mut_ptr()
