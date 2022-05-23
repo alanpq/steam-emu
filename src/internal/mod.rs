@@ -33,30 +33,22 @@ lazy_static! {
 pub extern "C" fn SteamInternal_ContextInit(
   pContextInitData: *mut c_void
 ) -> *mut CSteamAPIContext {
-  debug!("SteamInternal_ContextInit");
   unsafe {
     let ctx: *mut ContextInitData = transmute(pContextInitData);
     let mut ctx = *ctx;
-  // let mut ctx = pContextInitData;
-  // match ctx {
-    // Some(ctx) => {
-      debug!(?ctx);
-      // FIXME: wtf is happening here
-      let counter = GLOBAL_COUNTER.read().unwrap();
-      if ctx.counter != *counter {
-        debug!("SteamInternal_ContextInit initializing...");
-        let span = span!(Level::DEBUG, "SteamInternal_ContextInit");
-        {
-          let _guard = span.enter();
-          (ctx.p_fn)(ptr::addr_of_mut!(ctx.ctx));
-        }
-        ctx.counter = *counter;
-        debug!("set that counter");
+
+    // debug!(?ctx);
+    // FIXME: wtf is happening here
+    let counter = GLOBAL_COUNTER.read().unwrap();
+    if ctx.counter != *counter {
+      let span = span!(Level::DEBUG, "SteamInternal_ContextInit");
+      {
+        let _guard = span.enter();
+        (ctx.p_fn)(ptr::addr_of_mut!(ctx.ctx));
       }
-      // ptr::addr_of_mut!(ctx.ctx);
-      &mut ctx.ctx
-    // },
-    // None => panic!("SteamInternal_ContextInit: invalid pContextInitData!"),
+      ctx.counter = *counter;
+    }
+    &mut ctx.ctx
 // }
   }
 }
@@ -67,7 +59,7 @@ pub unsafe extern "C" fn SteamInternal_FindOrCreateUserInterface(
   pszVersion: *const c_char
 ) -> *mut c_void {
   let v = CStr::from_ptr(pszVersion).to_str().unwrap();
-  debug!("SteamInternal_FindOrCreateUserInterface -> {}", v);
+  // debug!("SteamInternal_FindOrCreateUserInterface -> {}", v);
   SteamAPI_ISteamClient_GetISteamGenericInterface(get_steam_client(), ptr::null_mut(), hSteamUser, SteamAPI_GetHSteamPipe(), pszVersion)
 }
 
@@ -77,7 +69,7 @@ pub unsafe extern "C" fn SteamInternal_FindOrCreateGameServerInterface(
   pszVersion: *const c_char
 ) -> *mut c_void {
   let v = CStr::from_ptr(pszVersion).to_str().unwrap();
-  debug!("SteamInternal_FindOrCreateGameServerInterface -> {}", v);
+  // debug!("SteamInternal_FindOrCreateGameServerInterface -> {}", v);
   SteamAPI_ISteamClient_GetISteamGenericInterface(get_steam_client(), ptr::null_mut(), hSteamUser, SteamAPI_GetHSteamPipe(), pszVersion)
 }
 

@@ -106,12 +106,10 @@ pub extern "C" fn SteamAPI_RunCallbacks() {
 
 #[no_mangle]
 pub unsafe extern "C" fn SteamAPI_GetHSteamPipe() -> HSteamPipe {
-  debug!("SteamAPI_GetHSteamPipe");
   *(USER_STEAM_PIPE.read().unwrap())
 }
 #[no_mangle]
 pub unsafe extern "C" fn SteamAPI_GetHSteamUser() -> HSteamUser {
-  debug!("SteamAPI_GetHSteamUser");
   1
 }
 
@@ -167,7 +165,7 @@ pub unsafe extern "C" fn SteamAPI_RegisterCallback(
   pCallback: *mut CCallbackBase, 
   iCallback: c_int
 ) {
-  
+  debug!("SteamAPI_RegisterCallback");
 }
 
 // FIXME: ISteamMusic_Pause
@@ -179,7 +177,7 @@ pub unsafe extern "C" fn SteamAPI_RegisterCallResult(
   pCallback: *mut CCallbackBase, 
   hAPICall: SteamAPICall_t
 ) {
-
+  debug!("SteamAPI_RegisterCallResult");
 }
 
 #[no_mangle]
@@ -191,7 +189,7 @@ pub extern "C" fn SteamAPI_SetMiniDumpComment(pchMsg: *const c_char) {
 pub unsafe extern "C" fn SteamAPI_UnregisterCallback(
   pCallback: *mut CCallbackBase
 ) {
-
+  debug!("SteamAPI_UnregisterCallback");
 }
 
 
@@ -224,7 +222,7 @@ pub unsafe extern "C" fn SteamAPI_UnregisterCallResult(
   pCallback: *mut CCallbackBase, 
   hAPICall: SteamAPICall_t
 ) {
-
+  debug!("SteamAPI_UnregisterCallResult");
 }
 // FIXME: ISteamApps_InstallDLC
 // FIXME: ISteamController_Init

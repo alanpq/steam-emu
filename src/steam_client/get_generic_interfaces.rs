@@ -25,14 +25,14 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
   let self_s = &mut *self_;
 
   debug!("GetISteamGenericInterface '{:?}'", version);
-  debug!(?self_);
-  debug!(hSteamUser, hSteamPipe);
+  // debug!(?self_);
+  // debug!(hSteamUser, hSteamPipe);
   let server = match (&self_s.steam_pipes).get(&hSteamPipe).unwrap_or(&SteamPipe::NoUser) {
       SteamPipe::Server => true,
       _ => false
   };
-  debug!(server);
-  debug!("--");
+  // debug!(server);
+  // debug!("--");
 
   if !server && !version.starts_with("SteamNetworkingUtils") && !version.starts_with("SteamUtils")
     && hSteamUser == 0 {
