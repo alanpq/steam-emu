@@ -25,7 +25,7 @@ impl SteamUser {
 }
 
 #[no_mangle]
-extern "C" fn BLoggedOn(self_: *mut SteamUser) -> bool {
+extern "fastcall" fn BLoggedOn(self_: *mut SteamUser, _edx: *mut c_void) -> bool {
   true
 }
 
