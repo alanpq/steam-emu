@@ -15,7 +15,7 @@ pub extern "C" fn SteamGameServer_RunCallbacks() {
 
 #[no_mangle]
 pub unsafe extern "C" fn SteamGameServer_GetHSteamUser() -> HSteamUser {
-  debug!("SteamGameServer_GetHSteamUser");
+  // debug!("SteamGameServer_GetHSteamUser");
   match (*get_steam_client()).is_server_init() {
     true => SERVER_HSTEAMUSER,
     false => 0

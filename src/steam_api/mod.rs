@@ -9,6 +9,8 @@ use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamC
 
 use lazy_static::lazy_static;
 
+mod callbacks;
+
 mod app_list;
 mod apps;
 mod controller;
@@ -35,6 +37,8 @@ mod user_stats;
 mod user;
 mod utils;
 mod video;
+
+pub use callbacks::*;
 
 pub use app_list::*;
 pub use apps::*;
@@ -100,8 +104,9 @@ pub extern "C" fn SteamAPI_Shutdown() {
   debug!("SteamAPI_Shutdown");
 }
 #[no_mangle]
-pub extern "C" fn SteamAPI_RunCallbacks() {
+pub unsafe extern "C" fn SteamAPI_RunCallbacks() {
   debug!("SteamAPI_RunCallbacks");
+  (*get_steam_client()).run_callbacks(true, false);
 }
 
 #[no_mangle]
@@ -163,9 +168,13 @@ pub unsafe extern "C" fn SteamAPI_WriteMiniDump(
 #[no_mangle]
 pub unsafe extern "C" fn SteamAPI_RegisterCallback(
   pCallback: *mut CCallbackBase, 
-  iCallback: c_int
+  iCallback: CallbackType
 ) {
   debug!("SteamAPI_RegisterCallback");
+  let cb = *pCallback;
+  debug!(?cb);
+  // FIXME: mutex is used here
+  (*get_steam_client()).register_callback(pCallback, iCallback)
 }
 
 // FIXME: ISteamMusic_Pause
@@ -178,6 +187,8 @@ pub unsafe extern "C" fn SteamAPI_RegisterCallResult(
   hAPICall: SteamAPICall_t
 ) {
   debug!("SteamAPI_RegisterCallResult");
+  let cb = *pCallback;
+  debug!(?cb);
 }
 
 #[no_mangle]
@@ -215,7 +226,6 @@ pub unsafe extern "C" fn SteamAPI_UnregisterCallback(
 // FIXME: SteamGameServer_v014
 // FIXME: SteamNetworking_v006
 // FIXME: SteamRemotePlay_v001
-pub type SteamAPICall_t = uint64;
 
 #[no_mangle]
 pub unsafe extern "C" fn SteamAPI_UnregisterCallResult(
@@ -372,13 +382,3 @@ pub extern "C" fn SteamAPI_RestartAppIfNecessary(
 // FIXME: SteamAPI_ISteamHTMLSurface_SetCookie
 // FIXME: SteamAPI_ISteamHTTP_DeferHTTPRequest
 // FIXME: SteamAPI_ISteamInventory_ConsumeItem
-
-#[repr(C)]
-pub struct CCallbackBase__bindgen_vtable(::std::os::raw::c_void);
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct CCallbackBase {
-    pub vtable_: *const CCallbackBase__bindgen_vtable,
-    pub m_nCallbackFlags: uint8,
-    pub m_iCallback: ::std::os::raw::c_int,
-}

@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Mutex, os::raw::c_char, ffi::c_void, ptr};
+use std::{collections::HashMap, sync::Mutex, os::raw::{c_char, c_int}, ffi::c_void, ptr};
 
 use tracing::{info, debug, error};
 
@@ -55,6 +55,11 @@ pub struct SteamClient {
 
   steam_pipe_counter: HSteamPipe,
   steam_pipes: HashMap<HSteamPipe, SteamPipe>,
+
+  pub callbacks_server: SteamCallbacks,
+  pub callbacks_client: SteamCallbacks,
+  pub callback_results_server: CallbackResults,
+  pub callback_results_client: CallbackResults,
 
   // client stuff
   pub steam_user: SteamUser,
@@ -114,6 +119,11 @@ impl SteamClient {
 
       steam_pipe_counter: 1,
       steam_pipes: HashMap::new(),
+
+      callbacks_server: SteamCallbacks::new(),
+      callbacks_client: SteamCallbacks::new(),
+      callback_results_server: CallbackResults::new(),
+      callback_results_client: CallbackResults::new(),
 
       steam_app_list: SteamAppList::new(),
       steam_apps: SteamApps::new(),
@@ -175,6 +185,29 @@ impl SteamClient {
     return CLIENT_HSTEAMUSER;
   }
 
+  pub fn run_callbacks(&mut self, run_client_cb: bool, run_gameserver_cb: bool) {
+    // mutex lock
+    // join with background thread?
+
+    // self.networking.run();
+    // self.steam_matchmaking_servers.run_callbacks();
+    // self.run_every_runcb.run()
+
+    // self.gs.run_callbacks();
+
+    if run_client_cb {
+      // self.callback_results_client.run_call_results();
+    }
+
+    if run_gameserver_cb {
+      // self.callback_results_server.run_call_result();
+    }
+
+    self.callbacks_server.run_callbacks();
+    self.callbacks_client.run_callbacks();
+    // FIXME: set last_cb_run
+  }
+
   pub fn init_server(&mut self) {
     self.server_init = true;
   }
@@ -198,6 +231,15 @@ impl SteamClient {
 
   pub fn is_user_logged_in(&self) -> bool {
     self.user_logged_in
+  }
+
+  pub fn register_callback(&mut self, callback: *mut CCallbackBase, callback_type: CallbackType) {
+    let callback_s = unsafe {*callback};
+    if callback_s.is_server() {
+      self.callbacks_server.add_callback(callback_type, callback);
+    } else {
+      self.callbacks_client.add_callback(callback_type, callback);
+    }
   }
 
 }

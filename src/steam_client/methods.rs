@@ -79,8 +79,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGameServer(
   hSteamPipe:HSteamPipe,
   pchVersion: *const c_char
 ) ->  *mut SteamGameServer {
-  let p = ptr::addr_of_mut!((*self_).steam_user);
-  debug!("GetISteamUser -> {:?}", p);
+  // let p = ptr::addr_of_mut!((*self_).steam_user);
+  // debug!("GetISteamUser -> {:?}", p);
   if !(*self_).steam_pipes.contains_key(&hSteamPipe) || hSteamUser == 0 {
     return ptr::null_mut(); // FIXME: figure out why this fucks shit
   }
