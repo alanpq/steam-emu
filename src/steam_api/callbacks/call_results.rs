@@ -1,6 +1,6 @@
 use std::{os::raw::{c_char, c_double, c_uint, c_int}, time::Instant, ffi::c_void, ptr};
 
-use tracing::{error, debug};
+use tracing::{error, debug, span, Level};
 
 use crate::uint32;
 use crate::steam_api::callbacks::callbacks::SteamAPICallImpl;
@@ -17,8 +17,8 @@ const DEFAULT_CB_TIMEOUT: f64 = 0.002;
 #[derive(Debug, Clone)]
 pub struct SteamCallResult {
   api_call: SteamAPICall_t,
-  callbacks: Vec<*mut CCallbackBase>,
-  result: Vec<c_char>,
+  callbacks: Vec<CCallbackBase>,
+  result: Vec<u8>,
   to_delete: bool,
   reserved: bool,
   created: Instant,
@@ -34,11 +34,11 @@ fn did_timeout(then: Instant, timeout_secs: f64) -> bool {
 }
 
 impl SteamCallResult {
-  pub fn new(call: SteamAPICall_t, icb: CallbackType, result: Vec<c_char>, r_in: f64, run_cc_cb: bool) -> Self {
+  pub fn new(call: SteamAPICall_t, icb: CallbackType, result: Vec<u8>, r_in: f64, run_cc_cb: bool) -> Self {
     Self {
       api_call: call,
       callbacks: Vec::new(),
-      result: result,
+      result,
       to_delete: false,
       reserved: false,
       created: Instant::now(),
@@ -86,7 +86,7 @@ bool check_timedout(std::chrono::high_resolution_clock::time_point old, double t
  */
 
 
-type CbAll = unsafe extern "C" fn(results: Vec<c_char>, callback: c_int);
+type CbAll = unsafe extern "C" fn(results: Vec<u8>, callback: c_int);
 
 #[repr(C)]
 #[derive(Debug, Clone)]
@@ -109,15 +109,23 @@ impl CallbackResults {
     self.cb_all = cb_all;
   }
 
-  pub fn add_call_completed(&mut self, cb: *mut CCallbackBase) {
+  pub fn add_call_completed(&mut self, cb: CCallbackBase) {
     
   }
 
-  pub fn add_call_back(&mut self, api_call: SteamAPICall_t, cb: *mut CCallbackBase) {
+  pub fn add_call_back(&mut self, api_call: SteamAPICall_t, mut cb: CCallbackBase) {
+    // panic!();
+    let span = span!(Level::DEBUG, "add_call_back");
+    let _enter = span.enter();
+    debug!("checking for call result");
     if let Some(cb_res) = self.call_results.iter_mut().find(|o| o.api_call == api_call) {
+      debug!("found call result");
       cb_res.callbacks.push(cb);
-      let mut cb = unsafe {*cb};
+      debug!("pushed callback");
+      // let mut cb = unsafe {*cb};
+      debug!(?cb);
       cb.set_register(cb.get_callback_type());
+      debug!("set registered flag");
     }
   }
 
@@ -125,7 +133,7 @@ impl CallbackResults {
     &mut self,
     api_call: Option<SteamAPICall_t>,
     cb_type: CallbackType,
-    result: &Vec<i8>,
+    result: &Vec<u8>,
     timeout: Option<f64>,
     run_call_completed_cb: Option<bool>
   ) -> SteamAPICall_t{
@@ -170,8 +178,8 @@ impl CallbackResults {
 
           call_res.to_delete = true;
           if call_res.has_cb() {
-            for cb in &call_res.callbacks {
-              let mut cb = unsafe {**cb};
+            for cb in &mut call_res.callbacks {
+              // let mut cb = unsafe {**cb};
               let callback_type = cb.get_callback_type();
               debug!("Calling callresult {:?} {}", cb, callback_type);
               // unlock global mutex

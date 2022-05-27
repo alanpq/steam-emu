@@ -1,6 +1,6 @@
-use std::{collections::HashMap, sync::Mutex, os::raw::{c_char, c_int}, ffi::c_void, ptr};
+use std::{collections::HashMap, sync::Mutex, os::raw::{c_char, c_int}, ffi::c_void, ptr, pin::Pin};
 
-use tracing::{info, debug, error};
+use tracing::{info, debug, error, warn};
 
 use lazy_static::lazy_static;
 use vtables::VTable;
@@ -11,6 +11,9 @@ mod methods;
 mod get_generic_interfaces;
 pub use methods::*;
 pub use get_generic_interfaces::*;
+
+use std::sync::mpsc;
+use std::sync::mpsc::{Sender, Receiver};
 
 const CLIENT_HSTEAMUSER: HSteamUser = 1;
 
@@ -110,6 +113,15 @@ pub struct SteamClient {
 impl SteamClient {
   pub fn new() -> SteamClient {
     debug!("Init new SteamClient");
+
+    let (cb_server_tx, rx): (Sender<CBExecuteTask>, Receiver<CBExecuteTask>) = mpsc::channel();
+    let callbacks_server = SteamCallbacks::new(rx);
+    let (cb_client_tx, rx): (Sender<CBExecuteTask>, Receiver<CBExecuteTask>) = mpsc::channel();
+    let callbacks_client = SteamCallbacks::new(rx);
+
+
+    let callback_results_server = CallbackResults::new();
+    let callback_results_client = CallbackResults::new();
     SteamClient {
       vtable: methods::get_vtable(),
       test: 48879,
@@ -120,10 +132,11 @@ impl SteamClient {
       steam_pipe_counter: 1,
       steam_pipes: HashMap::new(),
 
-      callbacks_server: SteamCallbacks::new(),
-      callbacks_client: SteamCallbacks::new(),
-      callback_results_server: CallbackResults::new(),
-      callback_results_client: CallbackResults::new(),
+      callbacks_server,
+      callbacks_client,
+
+      callback_results_server,
+      callback_results_client,
 
       steam_app_list: SteamAppList::new(),
       steam_apps: SteamApps::new(),
@@ -154,7 +167,7 @@ impl SteamClient {
       steam_utils: SteamUtils::new(),
       steam_video: SteamVideo::new(),
       
-      gs: SteamGameServer::new(),
+      gs: SteamGameServer::new(cb_server_tx.clone()),
       gs_utils: SteamUtils::new(),
       gs_networking: SteamNetworking::new(),
       gs_http: SteamHTTP::new(),
@@ -186,6 +199,7 @@ impl SteamClient {
   }
 
   pub fn run_callbacks(&mut self, run_client_cb: bool, run_gameserver_cb: bool) {
+    debug!("run_callbacks");
     // mutex lock
     // join with background thread?
 
@@ -193,7 +207,7 @@ impl SteamClient {
     // self.steam_matchmaking_servers.run_callbacks();
     // self.run_every_runcb.run()
 
-    // self.gs.run_callbacks();
+    self.gs.run_callbacks();
 
     if run_client_cb {
       // self.callback_results_client.run_call_results();
@@ -202,8 +216,9 @@ impl SteamClient {
     if run_gameserver_cb {
       // self.callback_results_server.run_call_result();
     }
-
+    debug!("run server callbacks");
     self.callbacks_server.run_callbacks();
+    debug!("run client callbacks");
     self.callbacks_client.run_callbacks();
     // FIXME: set last_cb_run
   }
@@ -236,6 +251,7 @@ impl SteamClient {
   pub fn register_callback(&mut self, callback: *mut CCallbackBase, callback_type: CallbackType) {
     let callback_s = unsafe {*callback};
     if callback_s.is_server() {
+      warn!("SERVER CALLBACK");
       self.callbacks_server.add_callback(callback_type, callback);
     } else {
       self.callbacks_client.add_callback(callback_type, callback);

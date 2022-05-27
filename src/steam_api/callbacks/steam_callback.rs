@@ -43,3 +43,11 @@ impl CCallbackBase {
     self.cb_flags.contains(CallbackFlags::GameServer)
   }
 }
+
+impl PartialEq for CCallbackBase {
+    fn eq(&self, other: &Self) -> bool {
+        self.vtable == other.vtable && self.cb_flags == other.cb_flags && self.callback_type == other.callback_type
+    }
+}
+
+impl Eq for CCallbackBase {}

@@ -1,32 +1,75 @@
-use std::{os::raw::c_char, ffi::{c_void, CStr}, ptr, sync::Mutex};
+use std::{os::raw::c_char, ffi::{c_void, CStr}, ptr, sync::{Mutex, mpsc::Sender}, pin::Pin, time::Instant};
 use lazy_static::__Deref;
+use serde::{Serialize, Deserialize};
 use tracing::{info, debug, error};
 
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 
-use crate::{uint32, uint16, HSteamPipe, int32};
+use crate::{uint32, uint16, HSteamPipe, int32, steam_api::{CallbackCategories, CallbackType, Callback}, define_callback};
 
-use super::AppId;
+use super::{AppId, SteamCallbacks, CBExecuteTask};
 
 #[has_vtable]
 #[derive(VTable, Debug)]
 pub struct SteamGameServer {
+  cb_tx: Sender<CBExecuteTask>,
+
   product: String,
   game_description: String,
   mod_dir: String,
 
   is_dedicated: bool,
+  
+  call_servers_connected: bool,
+  call_servers_disconnected: bool,
+
+  hack_time: u8,
+}
+
+define_callback! {
+  pub struct SteamServersConnected_t,
+  CallbackCategories::UserCallbacks => 1;
 }
 
 impl SteamGameServer {
-  pub fn new() -> Self {
+  pub fn new(cb_tx: Sender<CBExecuteTask>) -> Self {
     Self { vtable: get_vtable(),
+      cb_tx,
+
       product: String::new(),
       game_description: String::new(),
       mod_dir: String::new(),
 
       is_dedicated: false,
+
+      call_servers_connected: true, // FIXME: make this false by default
+      call_servers_disconnected: false,
+
+      hack_time: 0,
+    }
+  }
+
+  pub fn run_callbacks(&mut self) {
+    {
+      if self.hack_time < 4 {
+        self.hack_time += 1;
+        return; // FIXME: stupid hack fix
+      }
+      let (conn, disconn) = (self.call_servers_connected, self.call_servers_disconnected);
+      (self.call_servers_connected, self.call_servers_disconnected) = (false,false);
+
+      if conn {
+        debug!("CALLBACK: SteamServersConnected_t");
+        let res = SteamServersConnected_t{};
+        let data = bincode::serialize(&res).unwrap();
+        self.cb_tx.send(CBExecuteTask{
+          cb_type: res.get_type(),
+          result: data,
+          timeout: 0.1,
+          dont_post_if_already: false
+        }).unwrap();
+      }
     }
   }
 
