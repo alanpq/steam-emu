@@ -8,6 +8,8 @@ pub mod steam_client;
 mod universe;
 mod steam_id;
 
+mod macros;
+
 pub use universe::*;
 pub use steam_id::*;
 
