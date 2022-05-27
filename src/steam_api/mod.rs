@@ -3,7 +3,7 @@
 
 use std::{ffi::c_void, os::raw::{c_char, c_int}, sync::{Mutex, Arc, RwLock}, ptr};
 
-use tracing::{info, debug, error};
+use tracing::{info, debug, error, span, Level};
 
 use crate::{uint32, uint8, HSteamUser, HSteamPipe, uint64, steam_client::{SteamClient}, internal::{GLOBAL_COUNTER, SteamInternal_CreateInterface}, CLIENT};
 
@@ -84,6 +84,15 @@ pub unsafe fn get_steam_client() -> *mut SteamClient {
   CLIENT
 }
 
+pub fn safe_get_steam_client() -> &'static mut SteamClient {
+  let p = unsafe {CLIENT};
+  if p.is_null() {
+    error!("SteamClient is null!");
+    panic!();
+  }
+  unsafe {&mut *p}
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn SteamAPI_Init() -> bool {
   debug!("SteamAPI_Init");
@@ -105,8 +114,9 @@ pub extern "C" fn SteamAPI_Shutdown() {
 }
 #[no_mangle]
 pub unsafe extern "C" fn SteamAPI_RunCallbacks() {
-  debug!("SteamAPI_RunCallbacks");
-  (*get_steam_client()).run_callbacks(true, false);
+  let span = span!(Level::DEBUG, "SteamAPI_RunCallbacks");
+  let _enter = span.enter();
+  safe_get_steam_client().run_callbacks(true, false);
 }
 
 #[no_mangle]
