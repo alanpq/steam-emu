@@ -1,5 +1,6 @@
-use std::ffi::c_void;
+use std::{ffi::c_void, ptr::{self, addr_of}};
 
+use tracing::debug;
 use vtables::VTable;
 use vtables_derive::VTable;
 
@@ -21,12 +22,25 @@ impl CCallbackBase {
   }
 
   pub fn run(&mut self, param: *mut c_void) {
-    unsafe {self.get_virtual::<fn(param: *mut c_void)>(1)(param);};
+    debug!("run {:?}", addr_of!(self.vtable));
+    unsafe {self.get_virtual::<
+      extern "fastcall" fn(self_: *mut CCallbackBase, _edx: *mut c_void, param: *mut c_void) // _edx: *mut c_void,
+    >(0) (
+      self,
+      ptr::null_mut(),
+      param
+    );};
   }
 
   pub fn run_extra_params(&mut self, param: *mut c_void, io_failure: bool, api_call: SteamAPICall_t) {
-    unsafe { self.get_virtual::<fn(*mut c_void, bool, SteamAPICall_t)>(2)
-      (param, io_failure, api_call);
+    debug!("run_extra_params");
+    unsafe { self.get_virtual::<
+      extern "C" fn(self_: *mut CCallbackBase, *mut c_void, bool, SteamAPICall_t)>(1)(
+        ptr::addr_of_mut!(*self),
+        param,
+        io_failure,
+        api_call
+      );
     };
   }
 

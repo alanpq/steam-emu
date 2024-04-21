@@ -1,6 +1,6 @@
-use crate::{int32, HSteamUser, HSteamPipe, SERVER_HSTEAMUSER, steam_api::get_steam_client};
+use crate::{int32, HSteamUser, HSteamPipe, SERVER_HSTEAMUSER, steam_api::{get_steam_client, safe_get_steam_client}};
 
-use tracing::{info, debug, error};
+use tracing::{info, debug, error, span, Level};
 #[no_mangle]
 pub extern "C" fn SteamGameServer_GetHSteamPipe() -> HSteamPipe {
   debug!("SteamGameServer_GetHSteamPipe");
@@ -9,8 +9,9 @@ pub extern "C" fn SteamGameServer_GetHSteamPipe() -> HSteamPipe {
 
 #[no_mangle]
 pub extern "C" fn SteamGameServer_RunCallbacks() {
-  debug!("SteamGameServer_RunCallbacks");
-   // FIXME: implement
+  let span = span!(Level::DEBUG, "SteamGameServer_RunCallbacks");
+  let _enter = span.enter();
+  safe_get_steam_client().run_callbacks(false, true);
 }
 
 #[no_mangle]

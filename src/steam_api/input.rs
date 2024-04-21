@@ -60,22 +60,22 @@ pub enum EInputSourceMode {
 #[repr(C)]
 pub struct InputAnalogActionData_t {
 	// Type of data coming from this action, this will match what got specified in the action set
-	eMode: EInputSourceMode,
+	pub eMode: EInputSourceMode,
 	
 	// The current state of this action; will be delta updates for mouse actions
-	x: c_float,
-  y: c_float,
+	pub x: c_float,
+  pub y: c_float,
 	
 	// Whether or not this action is currently available to be bound in the active action set
-	bActive: bool,
+	pub bActive: bool,
 }
 
 #[repr(C)]
 pub struct InputDigitalActionData_t {
 	// The current state of this action; will be true if currently pressed
-	bState: bool,
+	pub bState: bool,
 	// Whether or not this action is currently available to be bound in the active action set
-	bActive: bool,
+	pub bActive: bool,
 }
 
 #[has_vtable]
@@ -135,9 +135,9 @@ pub extern "fastcall" fn GetDigitalActionData(
   _edx: *mut c_void,
   input_handle: InputHandle_t,
   digital_action_handle: InputDigitalActionHandle_t,
-  _test: *mut c_void,
+  extra: *mut c_void,
 ) -> InputDigitalActionData_t {
-  InputDigitalActionData_t { bState: false, bActive: false }
+  InputDigitalActionData_t { bState: true, bActive: false }
 }
 
 pub extern "fastcall" fn SteamAPI_ISteamInput_GetAnalogActionHandle(

@@ -112,16 +112,18 @@ impl CBExecuteTaskBuilder {
 #[repr(C)]
 #[derive(Debug)]
 pub struct SteamCallbacks {
+  pub results: CallbackResults,
+
   callbacks: HashMap<CallbackType, CallbackEntry>,
-  results: CallbackResults,
   rx: Receiver<CBExecuteTask>,
 }
 
 impl SteamCallbacks {
   pub fn new(rx: Receiver<CBExecuteTask>) -> Self {
     Self {
-      callbacks: HashMap::new(),
       results: CallbackResults::new(),
+
+      callbacks: HashMap::new(),
       rx,
     }
   }
@@ -153,7 +155,7 @@ impl SteamCallbacks {
     }
   }
 
-  pub fn run_callbacks(&mut self) {
+  pub fn pull_execute_tasks(&mut self) {
     let msgs: Vec<CBExecuteTask> = self.rx.try_iter().collect();
     for msg in msgs {
       self.add_callback_result(
@@ -163,7 +165,9 @@ impl SteamCallbacks {
         msg.dont_post_if_already,
       );
     }
+  }
 
+  pub fn run_callbacks(&mut self) {
     self.callbacks.iter_mut().for_each(|entry| entry.1.results.clear());
   }
 

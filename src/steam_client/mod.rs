@@ -61,8 +61,6 @@ pub struct SteamClient {
 
   pub callbacks_server: SteamCallbacks,
   pub callbacks_client: SteamCallbacks,
-  pub callback_results_server: CallbackResults,
-  pub callback_results_client: CallbackResults,
 
   // client stuff
   pub steam_user: SteamUser,
@@ -120,8 +118,6 @@ impl SteamClient {
     let callbacks_client = SteamCallbacks::new(rx);
 
 
-    let callback_results_server = CallbackResults::new();
-    let callback_results_client = CallbackResults::new();
     SteamClient {
       vtable: methods::get_vtable(),
       test: 48879,
@@ -134,9 +130,6 @@ impl SteamClient {
 
       callbacks_server,
       callbacks_client,
-
-      callback_results_server,
-      callback_results_client,
 
       steam_app_list: SteamAppList::new(),
       steam_apps: SteamApps::new(),
@@ -210,12 +203,15 @@ impl SteamClient {
     self.gs.run_callbacks();
 
     if run_client_cb {
-      // self.callback_results_client.run_call_results();
+      self.callbacks_client.pull_execute_tasks();
+      self.callbacks_client.results.run_call_results();
+    }
+    if run_gameserver_cb {
+      self.callbacks_server.pull_execute_tasks();
+      debug!("run call results for callbacks_server.results");
+      self.callbacks_server.results.run_call_results();
     }
 
-    if run_gameserver_cb {
-      // self.callback_results_server.run_call_result();
-    }
     debug!("run server callbacks");
     self.callbacks_server.run_callbacks();
     debug!("run client callbacks");

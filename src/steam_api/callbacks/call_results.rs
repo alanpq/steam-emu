@@ -164,6 +164,7 @@ impl CallbackResults {
   }
 
   pub fn run_call_results(&mut self) {
+    debug!("run_call_results");
     let cur_size = self.call_results.len();
     for call_res in &mut self.call_results {
       if !call_res.to_delete {
@@ -183,14 +184,20 @@ impl CallbackResults {
               let callback_type = cb.get_callback_type();
               debug!("Calling callresult {:?} {}", cb, callback_type);
               // unlock global mutex
+              debug!(run_call_completed_cb);
+              debug!(?call_res.result);
               if run_call_completed_cb {
+                let addr = ptr::addr_of_mut!(call_res.result);
+                debug!("cb.run_extra_params({:?}, ..)", addr);
                 cb.run_extra_params(
-                  ptr::addr_of_mut!(call_res.result[0]) as _,
+                  ptr::addr_of_mut!(call_res.result) as _,
                   false,
                   api_call
                 );
               } else {
-                cb.run(ptr::addr_of_mut!(call_res.result[0]) as _)
+                let addr = ptr::addr_of_mut!(call_res.result);
+                debug!("cb.run({:?})", addr);
+                cb.run(addr as _)
               }
               // relock global mutex
               debug!("callresult done");

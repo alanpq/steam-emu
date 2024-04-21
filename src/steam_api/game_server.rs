@@ -1,12 +1,12 @@
 use std::{os::raw::c_char, ffi::{c_void, CStr}, ptr, sync::{Mutex, mpsc::Sender}, pin::Pin, time::Instant};
 use lazy_static::__Deref;
 use serde::{Serialize, Deserialize};
-use tracing::{info, debug, error};
+use tracing::{info, debug, error, warn};
 
 use vtables::VTable;
 use vtables_derive::{VTable, has_vtable};
 
-use crate::{uint32, uint16, HSteamPipe, int32, steam_api::{CallbackCategories, CallbackType, Callback}, define_callback};
+use crate::{uint32, uint16, HSteamPipe, int32, steam_api::{CallbackCategories, CallbackType, Callback}, define_callback, CSteamID};
 
 use super::{AppId, SteamCallbacks, CBExecuteTask};
 
@@ -156,11 +156,20 @@ pub unsafe extern "fastcall" fn LogOnAnonymous(
   // FIXME: implement
 }
 
+pub unsafe extern "fastcall" fn SetMaxPlayerCount(
+  self_: *mut SteamGameServer,
+  _edx: *mut c_void,
+  max_players: int32,
+) {
+  debug!("SetMaxPlayerCount: {}", max_players);
+}
+
 pub unsafe extern "fastcall" fn set_int_stub(
   self_: *mut SteamGameServer,
   _edx: *mut c_void,
   val: int32,
 ) {
+  warn!("set_int_stub: {}", val);
 }
 pub unsafe extern "fastcall" fn set_str_stub(
   self_: *mut SteamGameServer,
@@ -175,6 +184,19 @@ pub unsafe extern "fastcall" fn set_bool_stub(
 ) {
 }
 
+pub extern "fastcall" fn BUpdateUserData(
+  self_: *mut SteamGameServer,
+  _edx: *mut c_void,
+  steam_id: CSteamID,
+  player_name: *const c_char,
+  score: uint32,
+) -> bool {
+  unsafe {
+    debug!("BUpdateUserData: {:?} {} {}", steam_id, CStr::from_ptr(player_name).to_str().unwrap(), score);
+  }
+  true
+}
+
 pub extern "fastcall" fn SetAdvertiseServerActive(
   self_: *mut SteamGameServer,
   _edx: *mut c_void,
@@ -185,7 +207,7 @@ pub extern "fastcall" fn SetAdvertiseServerActive(
 
 pub fn get_vtable() -> *mut *mut usize {
   unsafe {
-    static mut VTABLE: [*mut usize; 25] = [
+    static mut VTABLE: [*mut usize; 41] = [
       // Basic server data.  These properties, if set, must be set before before calling LogOn.  They
       // may not be changed after logged in.
       ptr::null_mut(), // InitGameServer?
@@ -203,7 +225,7 @@ pub fn get_vtable() -> *mut *mut usize {
       ptr::null_mut(), // GetSteamID
       ptr::null_mut(), // WasRestartRequested
 
-      set_int_stub as _, // SetMaxPlayerCount
+      SetMaxPlayerCount as _, // SetMaxPlayerCount
       set_int_stub as _, // SetBotPlayerCount
       set_str_stub as _, // SetServerName
       set_str_stub as _, // SetMapName
@@ -216,6 +238,28 @@ pub fn get_vtable() -> *mut *mut usize {
       ptr::null_mut(), // SetGameData
       ptr::null_mut(), // SetRegion
       SetAdvertiseServerActive as _, // SetAdvertiseServerActive
+      
+      ptr::null_mut(), // GetAuthSessionTicket
+      ptr::null_mut(), // BeginAuthSession
+      ptr::null_mut(), // EndAuthSession
+      ptr::null_mut(), // CancelAuthTicket
+
+      ptr::null_mut(), // UserHasLicenseForApp
+      ptr::null_mut(), // RequestUserGroupStatus
+      
+      ptr::null_mut(), // GetGameplayStats
+      ptr::null_mut(), // GetPublicIP
+
+      ptr::null_mut(), // HandleIncomingPacket
+      ptr::null_mut(), // GetNextOutgoingPacket
+
+      ptr::null_mut(), // AssociateWithClan
+      ptr::null_mut(), // ComputeNewPlayerCompatibility
+
+      ptr::null_mut(), // SendUserConnectAndAuthenticate_DEPRECATED
+      ptr::null_mut(), // CreateUnauthenticatedUserConnection
+      ptr::null_mut(), // SendUserDisconnect_DEPRECATED
+      BUpdateUserData as _, // BUpdateUserData
       // ...
     ];
     VTABLE.as_mut_ptr()

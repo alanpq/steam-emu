@@ -60,7 +60,7 @@ pub unsafe extern "C" fn SteamInternal_FindOrCreateUserInterface(
 ) -> *mut c_void {
   let v = CStr::from_ptr(pszVersion).to_str().unwrap();
   // debug!("SteamInternal_FindOrCreateUserInterface -> {}", v);
-  SteamAPI_ISteamClient_GetISteamGenericInterface(get_steam_client(), ptr::null_mut(), hSteamUser, SteamAPI_GetHSteamPipe(), pszVersion)
+  SteamAPI_ISteamClient_GetISteamGenericInterface(get_steam_client(),  hSteamUser, SteamAPI_GetHSteamPipe(), pszVersion)
 }
 
 #[no_mangle]
@@ -70,7 +70,7 @@ pub unsafe extern "C" fn SteamInternal_FindOrCreateGameServerInterface(
 ) -> *mut c_void {
   let v = CStr::from_ptr(pszVersion).to_str().unwrap();
   // debug!("SteamInternal_FindOrCreateGameServerInterface -> {}", v);
-  SteamAPI_ISteamClient_GetISteamGenericInterface(get_steam_client(), ptr::null_mut(), hSteamUser, SteamAPI_GetHSteamPipe(), pszVersion)
+  SteamAPI_ISteamClient_GetISteamGenericInterface(get_steam_client(), hSteamUser, SteamAPI_GetHSteamPipe(), pszVersion)
 }
 
 #[no_mangle]

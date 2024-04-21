@@ -11,9 +11,9 @@ use super::SteamAPI_ISteamClient_GetISteamUser;
 
 
 #[no_mangle]
-pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
+pub unsafe extern "C" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
   self_: *mut SteamClient, 
-  _edx: *mut c_void,
+  // _edx: *mut c_void,
   hSteamUser: HSteamUser, 
   hSteamPipe: HSteamPipe, 
   pchVersion: *const c_char
@@ -46,6 +46,8 @@ pub unsafe extern "fastcall" fn SteamAPI_ISteamClient_GetISteamGenericInterface(
       false => ptr::addr_of_mut!(self_s.steam_networking_sockets) as _,
     }
   }
+
+  let _edx = ptr::null_mut();
 
   // FIXME: there are so many interfaces yet to be added here
   if version.starts_with("SteamUser") {
