@@ -137,8 +137,12 @@ pub unsafe extern "C" fn SteamClient() -> *mut SteamClient {
 }
 
 // FIXME: SteamUGC_v016
-
+#[cfg(target_os = "windows")]
 use windows::Win32::System::Diagnostics::Debug::EXCEPTION_POINTERS;
+
+#[cfg(not(target_os = "windows"))]
+type EXCEPTION_POINTERS = c_void;
+
 #[no_mangle]
 pub unsafe extern "C" fn SteamAPI_WriteMiniDump(
   uStructuredExceptionCode: uint32, // The structured exception code.
@@ -148,19 +152,21 @@ pub unsafe extern "C" fn SteamAPI_WriteMiniDump(
 ) {
   error!("====== SteamAPI_WriteMiniDump ======");
   error!("Structured Exception Code: {:x}", uStructuredExceptionCode);
-  let exception = *pvExceptionInfo;
-  let mut rec_ptr = exception.ExceptionRecord;
+  #[cfg(target_os = "windows")] {
+    let exception = *pvExceptionInfo;
+    let mut rec_ptr = exception.ExceptionRecord;
 
-  
-  while !rec_ptr.is_null() {
-    let record = *rec_ptr;
-    let address = record.ExceptionAddress;
-    error!(?address);
-    let code = record.ExceptionCode;
-    let message = code.to_hresult().message();
-    error!(?code);
-    error!(%message);
-    rec_ptr = record.ExceptionRecord;
+    
+    while !rec_ptr.is_null() {
+      let record = *rec_ptr;
+      let address = record.ExceptionAddress;
+      error!(?address);
+      let code = record.ExceptionCode;
+      let message = code.to_hresult().message();
+      error!(?code);
+      error!(%message);
+      rec_ptr = record.ExceptionRecord;
+    }
   }
 }
 

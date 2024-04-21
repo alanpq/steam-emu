@@ -5,3 +5,4 @@ spacewar/*
 sdk/*
 
 *.log
+.direnv
